@@ -1,2 +1,2 @@
 #!/bin/bash
-bash lib_event.sh "ENDF"
+bash lib_event.sh "recdone" "info"

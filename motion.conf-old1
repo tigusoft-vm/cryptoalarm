@@ -26,10 +26,7 @@ setup_mode off
 
 # Videodevice to be used for capturing  (default /dev/video0)
 # for FreeBSD default is /dev/bktr0
-
-# videodevice /dev/video0
-#videodevice /dev/v4l/by-id/usb-Etron_Technology__Inc._USB2.0_Camera-video-index0
-#videodevice /dev/v4l/by-id/usb-Etron_Technology__Inc._USB2.0_Camera-video-index0
+videodevice /dev/video0
 
 # v4l2_palette allows to choose preferable palette to be use by motion
 # to capture from those supported by your videodevice. (default: 8)
@@ -79,7 +76,7 @@ height 288
 
 # Maximum number of frames to be captured per second.
 # Valid range: 2-100. Default: 100 (almost no limit).
-framerate 8
+framerate 10
 
 # Minimum time in seconds between capturing picture frames from the camera.
 # Default: 0 = disabled - the capture rate is given by the camera framerate.
@@ -120,7 +117,7 @@ auto_brightness off
 # If auto_brightness is enabled, this value defines the average brightness level
 # which Motion will try and adjust to.
 # Valid range 0-255, default 0 = disabled
-brightness 150
+brightness 160
 
 # Set the contrast of a video device.
 # Valid range 0-255, default 0 = disabled
@@ -128,7 +125,7 @@ contrast 0
 
 # Set the saturation of a video device.
 # Valid range 0-255, default 0 = disabled
-saturation 100
+saturation 0
 
 # Set the hue of a video device (NTSC feature).
 # Valid range 0-255, default 0 = disabled
@@ -154,13 +151,13 @@ switchfilter off
 
 # Threshold for number of changed pixels in an image that
 # triggers motion detection (default: 1500)
-threshold 800
+threshold 900
 
 # Automatically tune the threshold down if possible (default: off)
 threshold_tune off
 
 # Noise threshold for the motion detection (default: 32)
-noise_level 30
+noise_level 60
 
 # Automatically tune the noise threshold (default: on)
 # noise_tune on
@@ -170,7 +167,7 @@ noise_level 30
 # (l)abeling must only be used once and the 'l' must be the last letter.
 # Comment out to disable
 #despeckle EedDl
-#despeckle Ed
+despeckle Ed
 
 # Detect motion in predefined areas (1 - 9). Areas are numbered like that:  1 2 3
 # A script (on_area_detected) is started immediately when motion is         4 5 6
@@ -203,7 +200,7 @@ minimum_motion_frames 1
 pre_capture 2 
 
 # Number of frames to capture after motion is no longer detected (default: 0)
-post_capture 20 #<<< 
+post_capture 60 #<<< 
 
 # Gap is the seconds of no motion detection that triggers the end of an event
 # An event is defined as a series of motion images taken within a short timeframe.
@@ -321,7 +318,7 @@ locate on
 # Draws the timestamp using same options as C function strftime(3)
 # Default: %Y-%m-%d\n%T = date in ISO format and time in 24 hour clock
 # Text is placed in lower right corner
-text_right %Y-%m-%d\n%T-%q-%t
+text_right %Y-%m-%d\n%T-%q
 
 # Draw a user defined text on the images using same options as C function strftime(3)
 # Default: Not defined = no text
@@ -339,7 +336,7 @@ text_changes on
 # Default: %Y%m%d%H%M%S
 # The idea is that %C can be used filenames and text_left/right for creating
 # a unique identifier for each event.
-text_event %Y%m%d-%H_%M_%S-cam%t-%v-%q
+text_event %Y%m%d-%H_%M_%S-%v-%q
 
 # Draw characters at twice normal size on images. (default: off)
 text_double on
@@ -370,7 +367,7 @@ target_dir rec
 # File extension .jpg or .ppm is automatically added so do not include this.
 # Note: A symbolic link called lastsnap.jpg created in the target_dir will always
 # point to the latest snapshot, unless snapshot_filename is exactly 'lastsnap'
-snapshot_filename %Y%m%d%H%M%S-cam%t-snapshot
+snapshot_filename %C-snapshot
 
 # File path for motion triggered images (jpeg or ppm) relative to target_dir
 # Default: %v-%Y%m%d%H%M%S-%q
@@ -379,7 +376,7 @@ snapshot_filename %Y%m%d%H%M%S-cam%t-snapshot
 # File extension .jpg or .ppm is automatically added so do not include this
 # Set to 'preview' together with best-preview feature enables special naming
 # convention for preview shots. See motion guide for details
-jpeg_filename %Y%m%d%H%M%S-cam%t-%q
+jpeg_filename %C
 
 # File path for motion triggered ffmpeg films (mpeg) relative to target_dir
 # Default: %v-%Y%m%d%H%M%S
@@ -394,7 +391,7 @@ movie_filename %C-movie
 # Default value is near equivalent to legacy oldlayout option
 # For Motion 3.0 compatible mode choose: %Y/%m/%d-timelapse
 # File extension .mpg is automatically added so do not include this
-timelapse_filename %Y%m%d-cam%t-timelapse
+timelapse_filename %Y%m%d-timelapse
 
 
 ############################################################
@@ -635,9 +632,6 @@ sql_query insert into security(camera, filename, frame, file_type, time_stamp, e
 # This motion.conf file AND thread1.conf and thread2.conf.
 # Only put the options that are unique to each camera in the
 # thread config files. 
-thread cam0.conf
-thread cam1.conf
-
 ; thread /usr/local/etc/thread1.conf
 ; thread /usr/local/etc/thread2.conf
 ; thread /usr/local/etc/thread3.conf
