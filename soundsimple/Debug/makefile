@@ -43,7 +43,7 @@ all: test
 test: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -L/home/ot/.local/lib -Xlinker -rpath "/home/ot/.local/lib" -o "test" $(OBJS) $(USER_OBJS) $(LIBS)
+	g++ -L${HOME}/.local/lib -Xlinker -rpath "${HOME}/.local/lib" -o "test" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
