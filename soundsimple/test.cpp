@@ -88,7 +88,6 @@ class cAlarmSoundRecorder : public sf::SoundRecorder
   		vector<double> magX;
 
   		int confirmations = 0;
-
   		for (int i = LowInd; i < HighInd; i++) {
   			if (mag.at(i) > threshold) {
   				confirmations++;
@@ -96,6 +95,8 @@ class cAlarmSoundRecorder : public sf::SoundRecorder
   			magRange.push_back(mag.at(i));
   			magX.push_back(freq.at(i));
   		}
+
+  		//std::cout << confirmations << std::endl;
 
   		if (confirmations) {
   			std::ofstream log;
@@ -145,6 +146,7 @@ int main(int argc, char* argv[]){
 		Recorder.Stop();
 	}
 	else {
+		while(1) {
 		sf::SoundBuffer Buffer;
 
 		if (argc > 1) {
@@ -233,7 +235,7 @@ int main(int argc, char* argv[]){
 		//Detect Alarm
 		double threshold = 0.5; // magnitude threshold
 
-		int detectLow = 990;
+		int detectLow = 100;
 		int detectHigh = 1100;
 
 		int LowInd = detectLow/( (1.0/N)*SampleRate );
@@ -251,7 +253,7 @@ int main(int argc, char* argv[]){
 			magRange.push_back(mag.at(i));
 			magX.push_back(freq.at(i));
 		}
-
+		cout << "confirmations: " << confirmations << endl;
 		if (confirmations > 3) {
 			std::ofstream log;
 			log.open("log.txt", std::ios::app);
@@ -259,7 +261,7 @@ int main(int argc, char* argv[]){
 			log << currentDateTime() << "  ALARM DETECTED" << endl;
 			log.close();
 		}
-
+/*
 		// Plot results
 		if (1) {
 			try {
@@ -277,10 +279,10 @@ int main(int argc, char* argv[]){
 				cout << ge.what() << endl;
 			}
 		}
-
+*/
 		fftw_destroy_plan(p);
 		fftw_free(in); fftw_free(out);
-	}
+	}}
 }
 
 
