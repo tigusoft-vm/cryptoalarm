@@ -22,15 +22,15 @@ function announce() {
 	./lib_sendirc.sh "var/chan1" "$msg" &
 
 	pids=()
-	timeout 20s ./lib_sendxmpp.sh "rfree.mobile@jit.si" "$msg"
+	timeout 20s ./lib_sendxmpp.sh "rfree.m@mempo.org" "$msg"
 #	pids+=($!)
-	timeout 20s ./lib_sendxmpp.sh "rfree@jit.si" "$msg" 
+	timeout 20s ./lib_sendxmpp.sh "rfree@mempo.org" "$msg" 
 #	pids+=($!)
  #	timeout 20s ./lib_sendxmpp.sh "rfree.other@jit.si" "$msg" 
 #	pids+=($!)
  #	timeout 20s ./lib_sendxmpp.sh "vyrly@jabber.org" "$msg" 
 #	pids+=($!)
- 	timeout 20s ./lib_sendxmpp.sh "dedee.htc@jit.si" "$msg" 
+# 	timeout 20s ./lib_sendxmpp.sh "dedee.htc@jit.si" "$msg" 
 #	pids+=($!)
 
 	echo " $tag waiting pids: ${pids[@]} START" >> $log

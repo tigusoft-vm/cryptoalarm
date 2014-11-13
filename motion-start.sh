@@ -8,6 +8,8 @@ sleep 10
 ./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting..."
 sleep 60
 
+sleep 20
+
 ./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting...3"
 sleep 5
 ./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting...2"
