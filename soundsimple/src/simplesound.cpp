@@ -42,7 +42,7 @@ class cAlarmSoundRecorder : public sf::SoundRecorder
 
   		size_t N; // FFT size
   		N = SamplesCount;
-  		 
+
   	  fftw_complex *out;
   		fftw_plan p;
   		out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);

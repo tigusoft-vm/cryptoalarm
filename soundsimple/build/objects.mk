@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lsfml-graphics  -lutil -lboost_iostreams -lboost_system  -lboost_filesystem -lm -lfftw3 -lsfml-audio -lsfml-window  -lsfml-system
+LIBS := -lm -lsfml-graphics -lboost_iostreams -lboost_system -lboost_filesystem -lfftw3 -lsfml-audio -lsfml-window -lsfml-system
 
