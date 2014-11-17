@@ -1,5 +1,8 @@
 #include "libs.h"
 
+#include "cSound.h"
+#include "gnuplot_i.hpp"
+
 using namespace std;
 
 const std::string currentDateTime();
@@ -112,7 +115,7 @@ class cAlarmSoundRecorder: public sf::SoundRecorder
 
 		// Plot results
 		bool plot;
-		plot = true;
+		plot = false;
 		if (plot) {
 			try {
 				Gnuplot g1("spectrum");
@@ -144,6 +147,7 @@ class cAlarmSoundRecorder: public sf::SoundRecorder
 };
 
 int main(int argc, char* argv[]) {
+	cSound snd;
 
 	bool fromMic = true;
 	if (argc > 1)
