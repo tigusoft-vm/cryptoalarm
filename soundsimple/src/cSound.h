@@ -18,6 +18,8 @@ public:
 	void ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate);
 	void ProccessRecordingTest(const sf::SoundBuffer Buffer);
 
+	void Check(const std::vector <double> &mag, const unsigned int &from, const unsigned int &to);
+
 	const bool simulation_;
 
 

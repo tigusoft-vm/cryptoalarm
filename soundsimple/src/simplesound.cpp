@@ -4,16 +4,11 @@
 
 using namespace std;
 
-const std::string currentDateTime();
-void wait_for_key(); // Programm halts until keypress
-
 class cAlarm {
 
 };
 
 class cAlarmSoundRecorder: public sf::SoundRecorder {
-
-
 	virtual bool OnStart() {
 		cout << "Start sound recorder" << endl;
 		return true;
@@ -36,9 +31,8 @@ class cAlarmSoundRecorder: public sf::SoundRecorder {
 	}
 };
 
+
 int main(int argc, char* argv[]) {
-
-
 	bool fromMic = true;
 	if (argc > 1)
 	fromMic = false;
