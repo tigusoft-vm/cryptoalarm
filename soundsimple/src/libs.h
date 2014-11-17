@@ -8,6 +8,8 @@
 #include <iomanip>
 #include <numeric>
 #include <fstream>
+#include <memory>
+
 
 #include <cassert>
 
@@ -15,7 +17,7 @@
 
 #include <fftw3.h>
 
-#include "gnuplot_i.hpp"
+
 #include "otshell_utils/utils.hpp"
 
 
