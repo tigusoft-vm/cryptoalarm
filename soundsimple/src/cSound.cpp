@@ -105,6 +105,13 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 
 	confirmations = Interpret(mag, SampleRate, N);
 
+	mag.pop_back();
+	for (int i = 0; i < mag.size(); ++i) {
+		if (mag.at(i) > 0.8)
+			confirmations += 50;
+	}
+	
+
 	if (confirmations >= 4) {
 		_mark("alarm (confirmations): " << confirmations);
 
