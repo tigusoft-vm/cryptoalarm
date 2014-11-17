@@ -101,9 +101,12 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	}
 	_dbg2("energy (sum of mags): " << energy);
 
+	Check(mag, 550, 1200);
+	Check(mag, 2800, 3500);
+	Check(mag, 3770, 42000);
 
 	if (confirmations ) {
-		_mark("alarm: " << confirmations);
+		_mark("alarm (confirmations): " << confirmations);
 
 		std::ofstream log;
 		log.open("log.txt", std::ios::app);
@@ -142,6 +145,15 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	cout << "\n\n\n" << endl;
 
 }
+void cSound::Check(const std::vector<double>& mag, const unsigned int& from, const unsigned int& to) {
+	double sum = 0.;
+	for(auto i = from; i<to; ++i) {
+		sum += mag.at(i);
+	}
+	_note("from: " << from << ", to: " << to << ", sum: " << sum);
+
+}
+
 
 void cSound::ProccessRecordingTest(const sf::SoundBuffer Buffer) {
 
@@ -158,6 +170,7 @@ const std::string cSound::currentDateTime() {
 
 	return buf;
 }
+
 
 void cSound::wait_for_key() {
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__TOS_WIN__)  // every keypress registered, also arrow keys
