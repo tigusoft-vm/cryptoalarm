@@ -6,6 +6,6 @@ set(Boost_LIBRARIES "${Boost_LIBRARIES}")
 find_library(SFML REQUIRED COMPONENTS system window audio)
 find_library(FFTW3_LIBRARIES NAMES fftw3 libfftw3)
 
-include_directories(soundsimple/src/otshell_utils)
-add_subdirectory(soundsimple/src)
+include_directories(src/otshell_utils)
+add_subdirectory(src)
 
