@@ -7,11 +7,13 @@
 
 #include "cSound.h"
 #include "gnuplot_i.hpp"
+#include <sstream>
 
 using namespace std;
 
 cSound::cSound(bool s) :
-		simulation_(s)
+		simulation_(s),
+		minAlarm(0.90)
 {
 	//_info("constructor");
 }
@@ -105,21 +107,16 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 
 	confirmations = Interpret(mag, SampleRate, N);
 
-	mag.pop_back();
+	bool makeAlarm = false;
+	mag.back() = 0;
 	for (int i = 0; i < mag.size(); ++i) {
-		if (mag.at(i) > 0.8)
-			confirmations += 50;
+		if (mag.at(i) > minAlarm)
+			makeAlarm = true;
 	}
 	
 
-	if (confirmations >= 4) {
-		_mark("alarm (confirmations): " << confirmations);
-
-		std::ofstream log;
-		log.open("log.txt", std::ios::app);
-		cout << currentDateTime() << "  ALARM DETECTED: " << confirmations << endl;
-		log << currentDateTime() << "  ALARM DETECTED: " << confirmations << endl;
-		log.close();
+	if (confirmations >= 4 || makeAlarm) {
+		Alarm(confirmations);
 	}
 
 	// Plot results
@@ -229,6 +226,15 @@ const std::string cSound::currentDateTime() {
 }
 
 void cSound::Alarm(int level) {
+		_mark("alarm (confirmations): " << level);
+		std::stringstream ss;
+		std::ofstream log;
+		log.open("log.txt", std::ios::app);
+		cout << currentDateTime() << "  ALARM DETECTED: " << level << endl;
+		ss << "./send.sh \" " << currentDateTime() << "  ALARM DETECTED: " << level << "\" "<< endl;
+		std::system(ss.str().c_str());
+		log << currentDateTime() << "  ALARM DETECTED: " << level << endl;
+		log.close();
 }
 
 void cSound::wait_for_key() {
