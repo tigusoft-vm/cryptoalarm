@@ -18,15 +18,27 @@ public:
 	void ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate);
 	void ProccessRecordingTest(const sf::SoundBuffer Buffer);
 
-	void Check(const std::vector <double> &mag, const unsigned int &from, const unsigned int &to);
+	void Alarm(int level);
 
 	const bool simulation_;
 
+	struct alarmData {
+		int from;
+		int to;
+		double sum;
+		double avg;
+		double max;
+	};
 
 private:
 	const std::string currentDateTime();
 	void wait_for_key();
+	std::shared_ptr<alarmData> Check(const std::vector<double> &mag,  int from,  int to, unsigned int SampleRate, size_t N);
 
+
+	int Interpret(const std::vector<double> &mag, unsigned int SampleRate, size_t N); // hardcoded values for specific hardware
+
+	bool IsInRange(double var, double from, double to);
 
 };
 

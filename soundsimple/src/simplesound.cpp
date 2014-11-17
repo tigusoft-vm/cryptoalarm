@@ -16,13 +16,12 @@ class cAlarmSoundRecorder: public sf::SoundRecorder {
 
 	virtual bool OnProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
 		//cout << "Processing chunk of size " << SamplesCount << endl;
-		_info(*Samples << " , count " << SamplesCount);
+		//_info(*Samples << " , count " << SamplesCount);
 		unsigned int SampleRate = GetSampleRate();
 
 		auto snd = std::make_shared<cSound>(false);
 		snd->ProccessRecording(Samples, SamplesCount, SampleRate);
 
-		cout << "\n\n\n" << endl;
 		return true;
 	}
 
