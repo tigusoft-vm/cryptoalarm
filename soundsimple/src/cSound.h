@@ -31,6 +31,7 @@ public:
 	};
 
 private:
+	int minAlarm;
 	const std::string currentDateTime();
 	void wait_for_key();
 	std::shared_ptr<alarmData> Check(const std::vector<double> &mag,  int from,  int to, unsigned int SampleRate, size_t N);
