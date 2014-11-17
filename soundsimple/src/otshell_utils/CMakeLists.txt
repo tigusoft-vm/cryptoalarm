@@ -9,6 +9,7 @@ file(GLOB otshell_utils_sources # All files in directory:
 	"*.cpp"
 )
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_library (otshell_utils STATIC ${otshell_utils_sources})
 set_target_properties (otshell_utils PROPERTIES OUTPUT_NAME "otshell_utils")
 #target_link_libraries (upnpc-static ${LDLIBS}) # to add used libs
