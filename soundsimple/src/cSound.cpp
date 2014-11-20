@@ -116,7 +116,7 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	_note("minAlarm " << minAlarm);
 	for (int i = 0; i < 40; ++i)
 		mag.pop_back();
-	for (int i = 10; i < mag.size(); ++i) {
+	for (unsigned int i = 10; i < mag.size(); ++i) {
 		if (mag.at(i) > minAlarm) {
 			_dbg1("makeAlarm true " << i);
 			makeAlarm = true;
@@ -124,7 +124,7 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	}
 	
 
-	if (confirmations >= 4 || makeAlarm) {
+	if (confirmations >= MIN_CONF || makeAlarm) {
 		Alarm(confirmations);
 	}
 
@@ -161,38 +161,45 @@ int cSound::Interpret(const std::vector<double> &mag, unsigned int SampleRate, s
 	int confLvl = 0;
 
 	const auto range1 = Check(mag, 550, 1200, SampleRate, N);
-	if (IsInRange(range1->max, 0.85, 1.))
+	if (IsInRange(range1->max, 0.85, 1.)) {
 		confLvl+=3;
+		_dbg1("r1 max: " << range1->max);
+	}
 
-	if(IsInRange(range1->avg, 0.006, 0.012))
+	if(IsInRange(range1->avg, 0.006, 0.012)) {
 		confLvl+=2;
-
-	if(IsInRange(range1->avg, 0.006, 0.012))
-		confLvl++;
-
+		_dbg1("r1 avg: " << range1->avg);
+	}
 
 
 	const auto range2 = Check(mag, 2800, 3500, SampleRate, N);
-	if (IsInRange(range2->max, 0.2, 1.))
+	if (IsInRange(range2->max, 0.2, 1.)) {
 		confLvl+=2;
+		_dbg1("r2 max: " << range2->max);
+	}
 
-	if( IsInRange(range2->avg, 0.002, 0.004))
+	if( IsInRange(range2->avg, 0.002, 0.004)) {
 		confLvl++;
-
+		_dbg1("r2 avg: " << range2->avg);
+	}
 
 
 	const auto range3 = Check(mag, 3770, 4200, SampleRate, N);
-	if (IsInRange(range3->max, 0.05, 1.))
+	if (IsInRange(range3->max, 0.05, 1.)) {
 		confLvl+=2;
-
-	if(IsInRange(range3->avg, 0.002, 0.004))
+		_dbg1("r3 max: " << range3->max);
+	}
+	if(IsInRange(range3->avg, 0.002, 0.004)) {
 		confLvl++;
-
+		_dbg1("r3 avg: " << range2->avg);
+	}
 
 	// detector #2
 	const auto range4 = Check(mag, 2150, 2650, SampleRate, N);
-		if (IsInRange(range4->sum, 15., 50.))
-			confLvl+=2;
+	if (IsInRange(range4->sum, 15., 50.)) {
+		confLvl+=2;
+		_dbg1("r4 sum: " << range2->sum);
+	}
 
 
 
@@ -224,7 +231,7 @@ std::shared_ptr<cSound::alarmData> cSound::Check(const std::vector<double> &mag,
 	}
 
 	range->avg = range->sum / (to - from);
-	//_note("max: " << range->max << ", avg: " << range->avg << ", sum: " << range->sum);
+	_note("max: " << range->max << ", avg: " << range->avg << ", sum: " << range->sum);
 	return range;
 
 }
