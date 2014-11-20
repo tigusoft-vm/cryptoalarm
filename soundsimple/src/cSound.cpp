@@ -8,6 +8,9 @@
 #include "cSound.h"
 #include "gnuplot_i.hpp"
 #include <sstream>
+#define MIN_CONF 5
+
+#define _DATE "["<<currentDateTime()<<"]"
 
 using namespace std;
 
@@ -158,8 +161,10 @@ int cSound::Interpret(const std::vector<double> &mag, unsigned int SampleRate, s
 	int confLvl = 0;
 
 	const auto range1 = Check(mag, 550, 1200, SampleRate, N);
+	if (IsInRange(range1->max, 0.85, 1.))
+		confLvl+=3;
 
-	if (IsInRange(range1->max, 0.95, 1.))
+	if(IsInRange(range1->avg, 0.006, 0.012))
 		confLvl+=2;
 
 	if(IsInRange(range1->avg, 0.006, 0.012))
@@ -168,7 +173,7 @@ int cSound::Interpret(const std::vector<double> &mag, unsigned int SampleRate, s
 
 
 	const auto range2 = Check(mag, 2800, 3500, SampleRate, N);
-	if (IsInRange(range2->max, 0.2, 0.3))
+	if (IsInRange(range2->max, 0.2, 1.))
 		confLvl+=2;
 
 	if( IsInRange(range2->avg, 0.002, 0.004))
@@ -177,14 +182,23 @@ int cSound::Interpret(const std::vector<double> &mag, unsigned int SampleRate, s
 
 
 	const auto range3 = Check(mag, 3770, 4200, SampleRate, N);
-	if (IsInRange(range3->max, 0.1, 0.2))
+	if (IsInRange(range3->max, 0.05, 1.))
 		confLvl+=2;
 
 	if(IsInRange(range3->avg, 0.002, 0.004))
 		confLvl++;
 
 
-	_note("conflvl: " << confLvl);
+	// detector #2
+	const auto range4 = Check(mag, 2150, 2650, SampleRate, N);
+		if (IsInRange(range4->sum, 15., 50.))
+			confLvl+=2;
+
+
+
+
+
+	_info("conflvl: " << confLvl);
 
 	return confLvl;
 }
@@ -210,7 +224,7 @@ std::shared_ptr<cSound::alarmData> cSound::Check(const std::vector<double> &mag,
 	}
 
 	range->avg = range->sum / (to - from);
-	_note("max: " << range->max << ", avg: " << range->avg << ", sum: " << range->sum);
+	//_note("max: " << range->max << ", avg: " << range->avg << ", sum: " << range->sum);
 	return range;
 
 }
