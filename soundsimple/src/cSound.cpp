@@ -13,7 +13,7 @@ using namespace std;
 
 cSound::cSound(bool s) :
 		simulation_(s),
-		minAlarm(0.90)
+		minAlarm(1.)
 {
 	//_info("constructor");
 }
@@ -109,9 +109,15 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 
 	bool makeAlarm = false;
 	mag.back() = 0;
-	for (int i = 0; i < mag.size(); ++i) {
-		if (mag.at(i) > minAlarm)
+	_note("mag.size() " << mag.size());
+	_note("minAlarm " << minAlarm);
+	for (int i = 0; i < 40; ++i)
+		mag.pop_back();
+	for (int i = 10; i < mag.size(); ++i) {
+		if (mag.at(i) > minAlarm) {
+			_dbg1("makeAlarm true " << i);
 			makeAlarm = true;
+		}
 	}
 	
 
@@ -204,7 +210,7 @@ std::shared_ptr<cSound::alarmData> cSound::Check(const std::vector<double> &mag,
 	}
 
 	range->avg = range->sum / (to - from);
-	//_note("max: " << range->max << ", avg: " << range->avg << ", sum: " << range->sum);
+	_note("max: " << range->max << ", avg: " << range->avg << ", sum: " << range->sum);
 	return range;
 
 }
@@ -232,7 +238,9 @@ void cSound::Alarm(int level) {
 		log.open("log.txt", std::ios::app);
 		cout << currentDateTime() << "  ALARM DETECTED: " << level << endl;
 		ss << "./send.sh \" " << currentDateTime() << "  ALARM DETECTED: " << level << "\" "<< endl;
+		
 		std::system(ss.str().c_str());
+		
 		log << currentDateTime() << "  ALARM DETECTED: " << level << endl;
 		log.close();
 }
