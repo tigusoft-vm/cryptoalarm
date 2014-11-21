@@ -9,7 +9,7 @@
 #include <numeric>
 #include <fstream>
 #include <memory>
-
+#include <sstream>
 
 #include <cassert>
 #include <cstring>
