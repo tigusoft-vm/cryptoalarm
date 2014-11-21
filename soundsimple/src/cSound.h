@@ -10,6 +10,8 @@
 
 #include "libs.h"
 
+typedef std::vector<double> samples;
+
 class cSound {
 public:
 	cSound(bool s);
@@ -18,7 +20,7 @@ public:
 	void ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate);
 	void ProccessRecordingTest(const sf::SoundBuffer Buffer);
 
-	void Alarm(int level);
+	void alarm(int level);
 
 	const bool simulation_;
 
@@ -31,16 +33,23 @@ public:
 	};
 
 private:
-	double minAlarm;
+	const double minAlarm;
+
 	const std::string currentDateTime();
-	void wait_for_key();
-	std::shared_ptr<alarmData> Check(const std::vector<double> &mag,  int from,  int to, unsigned int SampleRate, size_t N);
-
-
-	int Interpret(const std::vector<double> &mag, unsigned int SampleRate, size_t N); // hardcoded values for specific hardware
-
+	void wait_for_key(); // used in plot function
+	std::shared_ptr<alarmData> getSection(const samples &mag,  int from,  int to, unsigned int SampleRate, size_t N);
+	int Interpret(const samples &mag, unsigned int SampleRate, size_t N); // hardcoded values for specific hardware
 	bool IsInRange(double var, double from, double to);
+	void convArrToDouble(double *toArr, const sf::Int16 *fromArr, const size_t &size);
+	std::vector<double> calculateMagnitude(size_t fftw_size, const fftw_complex *out);
+	std::vector<double> calculateFrequencies(unsigned int SampleRate, size_t fftw_size);
+	void normalize(samples &mag, double maxMag, size_t fftw_size);
+	void plotResults(const samples &x, const samples &y);
+	void detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size);
+	bool analyseData(samples mag);
 
+	// plotResult();
+	int autodetect(size_t fftw_size, const samples &freq, const samples &mag, unsigned int SampleRate); // old way to detect alarm, not used at now
 };
 
 #endif /* CSOUND_H_ */
