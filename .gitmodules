@@ -1,0 +1,3 @@
+[submodule "soundsimple/deps/gtest"]
+	path = soundsimple/deps/gtest
+	url = https://github.com/monetas/gtest.git
