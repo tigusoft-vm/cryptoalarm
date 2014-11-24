@@ -7,14 +7,25 @@
 
 #include "cSound.h"
 #include "gnuplot_i.hpp"
-#define MIN_CONF 5
 
 using namespace std;
 
+//vector <string> cSound::alarmData
+std::queue<std::string> cSound::alarmsToSend;
+int cSound::n = 0;
+mutex cSound::mtx;
+
 cSound::cSound(bool s) :
-		simulation_(s), minAlarm(1.), numberOfActiveThreads(1)
+		simulation_(s), minAlarm(1.), energy_(0)
 {
-	//_info("constructor");
+	if (n == 0) {
+		_dbg1(n);
+
+		xmppScript = thread(&cSound::alarmHandler);
+		xmppScript.detach();
+	}
+
+	n++;
 }
 
 void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate) {
@@ -44,9 +55,31 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	fftw_free(out);
 }
 
+void cSound::alarmHandler() {
+	_info("inf loop below");
+
+	while (true) {
+		if (alarmsToSend.empty()) sleep(1);
+
+		else {
+			_fact("sending");
+			mtx.lock();
+			string mess = alarmsToSend.back();
+			alarmsToSend.pop();
+			mtx.unlock();
+
+			// sending via xmpp
+			std::stringstream cmd;
+			cmd << "./send.sh \" " << mess << " \" \n";
+			std::system(cmd.str().c_str());
+		}
+	}
+}
+
 void cSound::detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size) {
 	auto confirmations = Interpret(mag, SampleRate, fftw_size);
 	bool makeAlarm = analyseData(mag);
+	if (energy_ >= NOISE) makeAlarm = true;
 	if (confirmations >= MIN_CONF || makeAlarm) alarm(confirmations);
 }
 
@@ -90,12 +123,13 @@ std::vector<double> cSound::calculateMagnitude(size_t fftw_size, const fftw_comp
 }
 
 void cSound::normalize(samples &mag, double maxMag, size_t fftw_size) {
-	double energy=0;
+	double energy = 0.;
 	for (size_t i = 0; i < fftw_size; i++) {
 		mag.at(i) /= maxMag;
 		energy += mag.at(i);
 		//if (mag.at(i) >= threshold) _dbg1(mag.at(i) << "\t" << freq.at(i));
 	}
+	energy_=energy;
 	_dbg2("energy: " << energy);
 }
 
@@ -195,38 +229,27 @@ const std::string cSound::currentDateTime() {
 
 void cSound::sendXMPPNotificationAlarm(int level) {
 	_scope_info("sending XMPP notification");
-	numberOfActiveThreads++;
-
-	while (numberOfActiveThreads >= MAX_THREADS) {
-		std::chrono::milliseconds duration(20000);
-		this_thread::sleep_for(duration);
-		_warn("threads: " << numberOfActiveThreads << ", sleeping");
-	}
 
 	std::stringstream cmd;
 	cmd << "./send.sh \" " << currentDateTime() << "  ALARM DETECTED: " << level << "\" " << endl;
-	_dbg3("command: [" << cmd.str());
 	std::system(cmd.str().c_str());
 
-	numberOfActiveThreads--;
 }
 
 void cSound::alarm(int level) {
 	_mark("alarm (confirmations): " << level);
 
-	thread xmppScript(&cSound::sendXMPPNotificationAlarm, this, level);
-//	xmppScript.join();
-	xmppScript.detach();
+//	call alarm
 
-//	std::future <void> xmppScript = std::async(std::launch::async, cSound::sendXMPPNotificationAlarm, level);
-//	xmppScript.wait();
-
-//	sendXMPPNotificationAlarm(level);
-
+	ostringstream ss;
 	std::ofstream log;
 	log.open("log.txt", std::ios::app);
 	cout << currentDateTime() << "  ALARM DETECTED: " << level << endl;
 	log << currentDateTime() << "  ALARM DETECTED: " << level << endl;
+	ss << currentDateTime() << "  ALARM DETECTED: " << level << endl;
+
+	alarmsToSend.push(ss.str());
+
 	log.close();
 }
 
@@ -310,3 +333,4 @@ int cSound::autodetect(size_t fftw_size, const samples& freq, const samples& mag
 cSound::~cSound() {
 	//_dbg3("destructor");
 }
+

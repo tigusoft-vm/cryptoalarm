@@ -10,9 +10,14 @@
 
 #include "libs.h"
 
-#define MAX_THREADS 50
+#define MAX_THREADS 5
+#define MIN_CONF 5
+//#define MIN_CONF 2
+#define NOISE 200
+
 
 typedef std::vector<double> samples;
+
 
 class cSound {
 public:
@@ -37,7 +42,15 @@ public:
 
 private:
 	const double minAlarm;
-	int numberOfActiveThreads;
+	static std::mutex mtx;
+	static int n;
+
+	std::thread xmppScript;
+
+	static std::queue <std::string> alarmsToSend;
+	static void alarmHandler();
+
+	double energy_;
 
 	const std::string currentDateTime();
 	void wait_for_key(); // used in plot function
