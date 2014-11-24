@@ -59,6 +59,7 @@ void cSound::alarmHandler() {
 	_info("inf loop below");
 
 	while (true) {
+		_note(alarmsToSend.size());
 		if (alarmsToSend.empty()) sleep(1);
 
 		else {
