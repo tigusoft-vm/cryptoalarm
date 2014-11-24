@@ -10,6 +10,8 @@
 
 #include "libs.h"
 
+#define MAX_THREADS 50
+
 typedef std::vector<double> samples;
 
 class cSound {
@@ -18,8 +20,8 @@ public:
 	virtual ~cSound();
 
 	void ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate);
-	void ProccessRecordingTest(const sf::SoundBuffer Buffer);
 
+	void sendXMPPNotificationAlarm(int level);
 	void alarm(int level);
 
 	const bool simulation_;
@@ -32,8 +34,10 @@ public:
 		double max;
 	};
 
+
 private:
 	const double minAlarm;
+	int numberOfActiveThreads;
 
 	const std::string currentDateTime();
 	void wait_for_key(); // used in plot function
