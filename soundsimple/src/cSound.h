@@ -13,7 +13,7 @@
 #define MAX_THREADS 5
 #define MIN_CONF 5
 //#define MIN_CONF 2
-#define NOISE 200
+#define NOISE 250
 
 
 typedef std::vector<double> samples;
