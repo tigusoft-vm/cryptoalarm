@@ -31,7 +31,6 @@ execute_process(COMMAND git "submodule" "update" "--init" "--recursive")
 
 
 
-include_directories(src/otshell_utils)
 
 add_subdirectory(deps)
 add_subdirectory(src)
