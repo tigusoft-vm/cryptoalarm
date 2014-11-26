@@ -15,7 +15,7 @@ int cSound::n = 0;
 mutex cSound::mtx;
 
 cSound::cSound(bool s) :
-		simulation_(s), minAlarm(1.), energy_(0), confirmation(0)
+		simulation_(s), minAlarm(1.), energy_(0), confirmation(0), wasAlarm(false)
 {
 	if (n == 0) createThreadForSendScript();
 	n++;
@@ -26,7 +26,7 @@ void cSound::createThreadForSendScript() {
 	xmppScript.detach();
 }
 
-void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate) {
+bool cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate) {
 	//_info(*Samples << " , count " << SamplesCount << ", " << SampleRate);
 	double *in = new double[SamplesCount];
 	convArrToDouble(in, Samples, SamplesCount); // Convert input array to double
@@ -53,6 +53,8 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	fftw_destroy_plan(p);
 	fftw_free(in);
 	fftw_free(out);
+
+	return wasAlarm;
 }
 
 void cSound::alarmHandler() {
@@ -238,6 +240,7 @@ void cSound::sendXMPPNotificationAlarm(const std::string &mess) {
 
 void cSound::alarm() {
 	_mark("alarm (confirmations): " << this->confirmation);
+	this->wasAlarm = true;
 	ostringstream message;
 	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation << endl;
 
@@ -248,7 +251,7 @@ void cSound::alarm() {
 	std::ofstream log;
 	log.open("log.txt", std::ios::app);
 	cout << message.str() << endl;
-	log << message.str() ;
+	log << message.str();
 	log.close();
 }
 

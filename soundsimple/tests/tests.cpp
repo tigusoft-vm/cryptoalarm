@@ -6,7 +6,7 @@
 
 using namespace std;
 
-cSound sound(true);
+//cSound sound(true);
 
 TEST(globTest, Positive) {
 
