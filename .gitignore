@@ -1,5 +1,9 @@
 *.wav
-# Created by https://www.gitignore.io
+log.txt
+sended.txt
+simplesound
+send.sh
+DartConfiguration.tcl
 
 ### Eclipse ###
 *.pydevproject
@@ -14,6 +18,7 @@ tmp/
 local.properties
 .settings/
 .loadpath
+.project
 
 # External tool builders
 .externalToolBuilders/
@@ -86,3 +91,4 @@ CMakeFiles
 Makefile
 cmake_install.cmake
 install_manifest.txt
+*.cmake

@@ -2,7 +2,6 @@
  * cSound.h
  *
  *  Created on: 17 lis 2014
- *      Author: abby
  */
 
 #ifndef CSOUND_H_
