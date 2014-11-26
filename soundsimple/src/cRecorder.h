@@ -9,12 +9,27 @@
 
 #include "libs.h"
 #include "cSound.h"
+#include "cAlarmData.h"
+#include "cSoundFrame.h"
+#include <boost/circular_buffer.hpp>
 
 class cAlarm {
-
 };
 
+
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
+	
+	cAlarmData mAlarmData;
+	
+	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<cSoundFrame>(100);
+	//sf::Int16 *cpyBuff;
+	time_t mBuffStarTime;
+	
+	bool mInAlarm;
+	time_t mAlarmLastTime;
+	bool mInEvent;
+	time_t mEventStarTime;
+	
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
 		return true;
@@ -28,13 +43,20 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	virtual bool OnProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
 		unsigned int SampleRate = GetSampleRate();
 
+		//cpyBuff = new sf::Int16 [sizeof(Samples) / sizeof(sf::Int16)]
+		//memcpy(cpyBuff, 
+		//mRawBuffer.push_back();
+
 		auto sound = std::make_shared<cSound>(false);
 		sf::SoundBuffer buff = GetBuffer();
 		buff.LoadFromSamples(Samples, SamplesCount, 2, SampleRate);
 
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 
-		if (wasAlarm) saveBuffToFile(Samples, SamplesCount, SampleRate, sound->currentDateTime());
+		if (wasAlarm) {
+			mAlarmData.add(Samples, SamplesCount, SampleRate);
+			saveBuffToFile(Samples, SamplesCount, SampleRate, sound->currentDateTime());
+		}
 
 
 		// return true to continue the capture, or false to stop it
@@ -54,6 +76,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	virtual void OnStop() {
 		std::cout << "Stop sound recorder" << std::endl;
 	}
+	
 };
 
 class cRecorder {

@@ -19,8 +19,8 @@ cAlarmData::cAlarmData()
 }
 
 void cAlarmData::add(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate) {
-	auto SamplesCopy = new sf::Int16 [sizeof Samples]; //(Samples);
-	std::memcpy(SamplesCopy, Samples, sizeof Samples);
+	auto SamplesCopy = new sf::Int16 [sizeof Samples]; // TODO
+	std::memcpy(SamplesCopy, Samples, sizeof Samples); // good?
 	this->Samples.push_back(*&SamplesCopy);
 	this->SamplesCounts.push_back(SamplesCount);
 	this->SampleRates.push_back(SampleRate);

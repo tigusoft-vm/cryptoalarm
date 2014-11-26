@@ -50,6 +50,7 @@ int main(int argc, char* argv[]) {
 
 		snd.ProccessRecording(Samples, SamplesCount, SampleRate);
 	}*/
+	return 0;
 }
 
 
