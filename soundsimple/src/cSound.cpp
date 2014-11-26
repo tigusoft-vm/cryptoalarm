@@ -11,21 +11,20 @@
 using namespace std;
 
 //vector <string> cSound::alarmData
-std::queue<std::string> cSound::alarmsToSend;
+std::stack<std::string> cSound::alarmsToSend;
 int cSound::n = 0;
 mutex cSound::mtx;
 
 cSound::cSound(bool s) :
-		simulation_(s), minAlarm(1.), energy_(0)
+		simulation_(s), minAlarm(1.), energy_(0), confirmation(0)
 {
-	if (n == 0) {
-		_dbg1(n);
-
-		xmppScript = thread(&cSound::alarmHandler);
-		xmppScript.detach();
-	}
-
+	if (n == 0) createThreadForSendScript();
 	n++;
+}
+void cSound::createThreadForSendScript() {
+	_dbg1(n);
+	xmppScript = thread(&cSound::alarmHandler);
+	xmppScript.detach();
 }
 
 void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate) {
@@ -45,11 +44,13 @@ void cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	auto freq = calculateFrequencies(SampleRate, fftw_size);
 	auto mag = calculateMagnitude(fftw_size, out);
 
-	detectAlarm(mag, SampleRate, fftw_size);
+	// alarm
+	if (detectAlarm(mag, SampleRate, fftw_size)) alarm();
 
-	// Plot results
+	// plot results
 	if (simulation_) plotResults(freq, mag);
 
+	// remove fftw data
 	fftw_destroy_plan(p);
 	fftw_free(in);
 	fftw_free(out);
@@ -60,12 +61,12 @@ void cSound::alarmHandler() {
 
 	while (true) {
 		_note(alarmsToSend.size());
-		if (alarmsToSend.empty()) sleep(1);
-
+		if (alarmsToSend.empty()) sleep(1); // nothing to send
 		else {
 			_fact("sending");
+
 			mtx.lock();
-			string mess = alarmsToSend.back();
+			string mess = alarmsToSend.top();
 			alarmsToSend.pop();
 			mtx.unlock();
 
@@ -77,14 +78,13 @@ void cSound::alarmHandler() {
 	}
 }
 
-void cSound::detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size) {
-	auto confirmations = Interpret(mag, SampleRate, fftw_size);
-	bool makeAlarm = analyseData(mag);
-	if (energy_ >= NOISE) makeAlarm = true;
-	if (confirmations >= MIN_CONF || makeAlarm) alarm(confirmations);
+bool cSound::detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size) {
+	this->confirmation = Interpret(mag, SampleRate, fftw_size);
+	if (confirmation >= MIN_CONF || hasMagHigh(mag) || energy_ >= MAX_STANDARD_NOISE) return true;
+	return false;
 }
 
-bool cSound::analyseData(samples mag) {
+bool cSound::hasMagHigh(samples mag) {
 	bool makeAlarm = false;
 	mag.back() = 0;
 	//_note("mag.size() " << mag.size());
@@ -130,8 +130,8 @@ void cSound::normalize(samples &mag, double maxMag, size_t fftw_size) {
 		energy += mag.at(i);
 		//if (mag.at(i) >= threshold) _dbg1(mag.at(i) << "\t" << freq.at(i));
 	}
-	energy_=energy;
-	_dbg2("energy: " << energy);
+	energy_ = energy;
+	//_dbg2("energy: " << energy);
 }
 
 std::vector<double> cSound::calculateFrequencies(unsigned int SampleRate, size_t fftw_size) {
@@ -145,49 +145,49 @@ std::vector<double> cSound::calculateFrequencies(unsigned int SampleRate, size_t
 }
 
 int cSound::Interpret(const samples &mag, unsigned int SampleRate, size_t N) {
-
+	bool printDebug = false;
 	int confLvl = 0;
 
 	const auto range1 = getSection(mag, 550, 1200, SampleRate, N);
 	if (IsInRange(range1->max, 0.85, 1.)) {
 		confLvl += 3;
-		_dbg1("r1 max: " << range1->max);
+		if (printDebug) _dbg1("r1 max: " << range1->max);
 	}
 
 	if (IsInRange(range1->avg, 0.006, 0.012)) {
 		confLvl += 2;
-		_dbg1("r1 avg: " << range1->avg);
+		if (printDebug) _dbg1("r1 avg: " << range1->avg);
 	}
 
 	const auto range2 = getSection(mag, 2800, 3500, SampleRate, N);
 	if (IsInRange(range2->max, 0.2, 1.)) {
 		confLvl += 2;
-		_dbg1("r2 max: " << range2->max);
+		if (printDebug) _dbg1("r2 max: " << range2->max);
 	}
 
 	if (IsInRange(range2->avg, 0.002, 0.004)) {
 		confLvl++;
-		_dbg1("r2 avg: " << range2->avg);
+		if (printDebug) _dbg1("r2 avg: " << range2->avg);
 	}
 
 	const auto range3 = getSection(mag, 3770, 4200, SampleRate, N);
 	if (IsInRange(range3->max, 0.05, 1.)) {
 		confLvl += 2;
-		_dbg1("r3 max: " << range3->max);
+		if (printDebug) _dbg1("r3 max: " << range3->max);
 	}
 	if (IsInRange(range3->avg, 0.002, 0.004)) {
 		confLvl++;
-		_dbg1("r3 avg: " << range2->avg);
+		if (printDebug) _dbg1("r3 avg: " << range2->avg);
 	}
 
 	// detector #2
 	const auto range4 = getSection(mag, 2150, 2650, SampleRate, N);
 	if (IsInRange(range4->sum, 15., 50.)) {
 		confLvl += 2;
-		_dbg1("r4 sum: " << range2->sum);
+		if (printDebug) _dbg1("r4 sum: " << range2->sum);
 	}
 
-	_dbg3("conflvl: " << confLvl);
+	if (printDebug) _dbg3("conflvl: " << confLvl);
 
 	return confLvl;
 }
@@ -228,29 +228,28 @@ const std::string cSound::currentDateTime() {
 	return buf;
 }
 
-void cSound::sendXMPPNotificationAlarm(int level) {
+void cSound::sendXMPPNotificationAlarm(const std::string &mess) {
 	_scope_info("sending XMPP notification");
 
 	std::stringstream cmd;
-	cmd << "./send.sh \" " << currentDateTime() << "  ALARM DETECTED: " << level << "\" " << endl;
+	cmd << "./send.sh \" " << mess << "\" " << endl;
 	std::system(cmd.str().c_str());
 
 }
 
-void cSound::alarm(int level) {
-	_mark("alarm (confirmations): " << level);
+void cSound::alarm() {
+	_mark("alarm (confirmations): " << this->confirmation);
+	ostringstream message;
+	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation << endl;
 
-//	call alarm
+	mtx.lock();
+	alarmsToSend.push(message.str());
+	mtx.unlock();
 
-	ostringstream ss;
 	std::ofstream log;
 	log.open("log.txt", std::ios::app);
-	cout << currentDateTime() << "  ALARM DETECTED: " << level << endl;
-	log << currentDateTime() << "  ALARM DETECTED: " << level << endl;
-	ss << currentDateTime() << "  ALARM DETECTED: " << level << endl;
-
-	alarmsToSend.push(ss.str());
-
+	cout << message.str() << endl;
+	log << message.str() ;
 	log.close();
 }
 
@@ -334,4 +333,3 @@ int cSound::autodetect(size_t fftw_size, const samples& freq, const samples& mag
 cSound::~cSound() {
 	//_dbg3("destructor");
 }
-

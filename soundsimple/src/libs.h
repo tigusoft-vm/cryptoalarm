@@ -15,9 +15,7 @@
 #include <chrono>
 #include <atomic>
 #include <condition_variable>
-#include <deque>          // std::deque
-#include <list>           // std::list
-#include <queue>          // std::queue
+#include <stack>
 
 #include <cassert>
 #include <cstring>
@@ -31,4 +29,4 @@
 
 
 
-#endif LIBS_H_
+#endif /* LIBS_H_ */

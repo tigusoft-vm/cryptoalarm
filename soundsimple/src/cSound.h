@@ -10,10 +10,11 @@
 
 #include "libs.h"
 
-#define MAX_THREADS 5
+#include "cSections.h"
+
 #define MIN_CONF 5
 //#define MIN_CONF 2
-#define NOISE 250
+#define MAX_STANDARD_NOISE 250
 
 
 typedef std::vector<double> samples;
@@ -22,12 +23,13 @@ typedef std::vector<double> samples;
 class cSound {
 public:
 	cSound(bool s);
+	cSound();
 	virtual ~cSound();
 
 	void ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate);
 
-	void sendXMPPNotificationAlarm(int level);
-	void alarm(int level);
+	void sendXMPPNotificationAlarm(const std::string &mess);
+	void alarm();
 
 	const bool simulation_;
 
@@ -47,11 +49,13 @@ private:
 
 	std::thread xmppScript;
 
-	static std::queue <std::string> alarmsToSend;
+	static std::stack <std::string> alarmsToSend;
 	static void alarmHandler();
 
 	double energy_;
+	int confirmation;
 
+	void createThreadForSendScript();
 	const std::string currentDateTime();
 	void wait_for_key(); // used in plot function
 	std::shared_ptr<alarmData> getSection(const samples &mag,  int from,  int to, unsigned int SampleRate, size_t N);
@@ -62,8 +66,8 @@ private:
 	std::vector<double> calculateFrequencies(unsigned int SampleRate, size_t fftw_size);
 	void normalize(samples &mag, double maxMag, size_t fftw_size);
 	void plotResults(const samples &x, const samples &y);
-	void detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size);
-	bool analyseData(samples mag);
+	bool detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size);
+	bool hasMagHigh(samples mag);
 
 	// plotResult();
 	int autodetect(size_t fftw_size, const samples &freq, const samples &mag, unsigned int SampleRate); // old way to detect alarm, not used at now
