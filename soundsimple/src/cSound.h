@@ -25,12 +25,14 @@ public:
 	cSound();
 	virtual ~cSound();
 
-	void ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate);
+	bool ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate);
+	const std::string currentDateTime();
 
 	void sendXMPPNotificationAlarm(const std::string &mess);
 	void alarm();
 
 	const bool simulation_;
+
 
 	struct alarmData {
 		int from;
@@ -45,6 +47,7 @@ private:
 	const double minAlarm;
 	static std::mutex mtx;
 	static int n;
+	bool wasAlarm;
 
 	std::thread xmppScript;
 
@@ -55,7 +58,6 @@ private:
 	int confirmation;
 
 	void createThreadForSendScript();
-	const std::string currentDateTime();
 	void wait_for_key(); // used in plot function
 	std::shared_ptr<alarmData> getSection(const samples &mag,  int from,  int to, unsigned int SampleRate, size_t N);
 	int Interpret(const samples &mag, unsigned int SampleRate, size_t N); // hardcoded values for specific hardware

@@ -11,7 +11,7 @@ using namespace std;
 cRecorder::cRecorder() :
 		fromMicrophoneMode(true)
 {
-	assert(sf::SoundRecorder::CanCapture()); // audio capture must be supported
+	assert(sf::SoundBufferRecorder::CanCapture()); // audio capture must be supported
 }
 
 cRecorder::~cRecorder()
@@ -26,9 +26,6 @@ void cRecorder::startRecording() {
 		waitForExitKey();
 	}
 	Recorder.Stop();
-	auto filename = "my_rec.ogv";
-	sf::SoundBuffer Buffer = Recorder.GetBuffer();
-	Buffer.SaveToFile(filename);
 }
 
 void cRecorder::waitForExitKey() {

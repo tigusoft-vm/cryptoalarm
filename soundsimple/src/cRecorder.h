@@ -29,11 +29,24 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		unsigned int SampleRate = GetSampleRate();
 
 		auto sound = std::make_shared<cSound>(false);
-		sound->ProccessRecording(Samples, SamplesCount, SampleRate);
+		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
+
+		if (wasAlarm) saveBuffToFile(Samples, SamplesCount, SampleRate, sound->currentDateTime());
+
 
 		// return true to continue the capture, or false to stop it
 		return true;
 	}
+
+	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename) {
+		filename += ".wav";
+		sf::SoundBuffer buff = GetBuffer();
+		buff.LoadFromSamples(Samples, SamplesCount, 2, SampleRate);
+		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
+		if(!buff.SaveToFile(filename)) _erro(filename << " not saved :( ");
+	}
+
+
 
 	virtual void OnStop() {
 		std::cout << "Stop sound recorder" << std::endl;
