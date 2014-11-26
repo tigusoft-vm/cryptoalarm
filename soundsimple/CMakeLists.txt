@@ -27,12 +27,9 @@ endif()
 execute_process(COMMAND git "submodule" "update" "--init" "--recursive")
 
 
-
-
-
+add_subdirectory(tests)
 
 
 add_subdirectory(deps)
 add_subdirectory(src)
-add_subdirectory(tests)
 

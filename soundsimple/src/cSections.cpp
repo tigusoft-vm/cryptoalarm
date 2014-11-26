@@ -33,7 +33,7 @@ bool cSections::getFromFile(const std::string& filename) {
 
 
 
-
+	return true;
 }
 
 std::ostream& operator<<(std::ostream& os, const cSections::cSection& section) {
@@ -47,4 +47,14 @@ std::ostream& operator<<(std::ostream& os, const cSections::cSection& section) {
 	//os << ctask.day_time_ << " " << task::states_.at(ctask.type_) << " "
 	//		<< ctask.name_;
 	return os;
+}
+
+bool cSections::interpretLine(std::string line) {
+	if( line.front()) return false;
+
+	return true;
+}
+
+void cSections::getOptionalData()
+{
 }

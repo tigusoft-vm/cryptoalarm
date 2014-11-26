@@ -1,15 +1,15 @@
 #include <limits.h>
 #include "gtest/gtest.h"
 
-bool check() { 
-	return true;
-}
+#include "../src/libs.h"
+#include "cSound.h"
 
-TEST(IsPrimeTest, Positive) {
-  EXPECT_FALSE(check());
-  EXPECT_TRUE(check());
-  EXPECT_FALSE(check());
-  EXPECT_TRUE(check());
+using namespace std;
+
+
+
+TEST(globTest, Positive) {
+
 
 }
 

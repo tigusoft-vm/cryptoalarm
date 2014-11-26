@@ -30,12 +30,13 @@ public:
 	};
 
 	virtual ~cSections();
+	bool interpretLine(std::string line);
+
 
 private:
 	std::vector <cSection> sections;
 	std::vector <std::string> keywords;
 	bool getFromFile(const std::string &filename);
-	bool interpretLine(std::string &line);
 	void getOptionalData();
 };
 
