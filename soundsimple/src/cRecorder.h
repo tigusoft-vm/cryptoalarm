@@ -14,7 +14,7 @@ class cAlarm {
 
 };
 
-class cAlarmSoundRecorder: public sf::SoundRecorder {
+class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
 		return true;

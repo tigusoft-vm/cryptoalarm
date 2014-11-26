@@ -26,6 +26,9 @@ void cRecorder::startRecording() {
 		waitForExitKey();
 	}
 	Recorder.Stop();
+	auto filename = "my_rec.ogv";
+	sf::SoundBuffer Buffer = Recorder.GetBuffer();
+	Buffer.SaveToFile(filename);
 }
 
 void cRecorder::waitForExitKey() {
