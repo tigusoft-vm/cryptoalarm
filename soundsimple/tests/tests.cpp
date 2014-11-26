@@ -2,11 +2,11 @@
 #include "gtest/gtest.h"
 
 #include "../src/libs.h"
-#include "cSound.h"
+#include "../src/cSound.h"
 
 using namespace std;
 
-
+cSound sound(true);
 
 TEST(globTest, Positive) {
 

@@ -2,7 +2,6 @@
  * cSound.cpp
  *
  *  Created on: 17 lis 2014
- *      Author: abby
  */
 
 #include "cSound.h"
