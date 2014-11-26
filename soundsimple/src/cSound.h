@@ -52,7 +52,11 @@ private:
 	std::thread xmppScript;
 
 	static std::stack <std::string> alarmsToSend;
+
+
+
 	static void alarmHandler();
+
 
 	double energy_;
 	int confirmation;
