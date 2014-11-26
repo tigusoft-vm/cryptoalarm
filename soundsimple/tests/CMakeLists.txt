@@ -15,7 +15,6 @@ add_executable(${NAME} ${SRC})
 
 target_link_libraries(${NAME}
   ${GTEST_BOTH_LIBRARIES}
-  src/libcsound
 )
 
 set_target_properties(${NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY tests)
