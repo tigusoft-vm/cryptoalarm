@@ -20,15 +20,13 @@ class cAlarm {
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	
 	cAlarmData mAlarmData;
-	
-	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<cSoundFrame>(100);
-	//sf::Int16 *cpyBuff;
-	time_t mBuffStarTime;
+    boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<cSoundFrame>(200);
+    /*time_t mBuffStarTime;
 	
 	bool mInAlarm;
 	time_t mAlarmLastTime;
 	bool mInEvent;
-	time_t mEventStarTime;
+    time_t mEventStarTime;*/
 	
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
@@ -42,6 +40,9 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	 */
 	virtual bool OnProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
 		unsigned int SampleRate = GetSampleRate();
+        cSoundFrame mSoundFrame;
+        mSoundFrame.addFrame(Samples);
+        mRawBuffer.push_back(mSoundFrame);
 
 		//cpyBuff = new sf::Int16 [sizeof(Samples) / sizeof(sf::Int16)]
 		//memcpy(cpyBuff, 

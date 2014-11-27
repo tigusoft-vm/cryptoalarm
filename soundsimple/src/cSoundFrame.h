@@ -9,12 +9,13 @@ class cSoundFrame
 {
 	sf::Int16 *mSample;
 	chrono::system_clock::time_point mBuffStarTime;
-	chrono::system_clock::time_point mAlarmLastTime;
-	bool mInEvent;
-	bool mInAlarm;
+    //chrono::system_clock::time_point mAlarmLastTime;
+    //bool mInEvent;
+    //bool mInAlarm;
 	
 public:
-	void addFrame(sf::Int16 *pSample);
+    void addFrame(const sf::Int16 *pSample);
+    ~cSoundFrame();
 };
 
 #endif
