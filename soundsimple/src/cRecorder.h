@@ -13,25 +13,33 @@
 #include "cSoundFrame.h"
 #include <boost/circular_buffer.hpp>
 
+#define CBUFF_SIZE 200
+#define STEREO 2
+
 class cAlarm {
 };
 
-
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
-	
+
 	cAlarmData mAlarmData;
-    boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<cSoundFrame>(200);
-    /*time_t mBuffStarTime;
-	
-	bool mInAlarm;
-	time_t mAlarmLastTime;
-	bool mInEvent;
-    time_t mEventStarTime;*/
-	
+	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<
+			cSoundFrame>(CBUFF_SIZE);
+
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
 		return true;
 	}
+
+	void createAndSaveFrameToCBuff(const sf::Int16* Samples) {
+		cSoundFrame mSoundFrame(Samples);
+		mRawBuffer.push_back(mSoundFrame);
+		_dbg2("Sound frame size: " << mSoundFrame.size());
+	}
+
+	void mergeCBuff() {
+
+	}
+
 
 	/**
 	 * Audio samples are provided to the onProcessSamples function every 100 ms.
@@ -39,26 +47,25 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	 * (unless you modify SFML itself).
 	 */
 	virtual bool OnProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
-		unsigned int SampleRate = GetSampleRate();
-        cSoundFrame mSoundFrame;
-        mSoundFrame.addFrame(Samples);
-        mRawBuffer.push_back(mSoundFrame);
+		_dbg3("samples count " << SamplesCount);
 
-		//cpyBuff = new sf::Int16 [sizeof(Samples) / sizeof(sf::Int16)]
-		//memcpy(cpyBuff, 
-		//mRawBuffer.push_back();
+		unsigned int SampleRate = GetSampleRate();
+		createAndSaveFrameToCBuff(Samples);
 
 		auto sound = std::make_shared<cSound>(false);
-		sf::SoundBuffer buff = GetBuffer();
-		buff.LoadFromSamples(Samples, SamplesCount, 2, SampleRate);
-
-		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
+		auto wasAlarm = false;
+		/*auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 
 		if (wasAlarm) {
+			mergeCBuff();
+
+			// TODO:
+			sf::SoundBuffer buff = GetBuffer();
+			buff.LoadFromSamples(Samples, SamplesCount, 2, SampleRate);
+
 			mAlarmData.add(Samples, SamplesCount, SampleRate);
 			saveBuffToFile(Samples, SamplesCount, SampleRate, sound->currentDateTime());
-		}
-
+		}*/
 
 		// return true to continue the capture, or false to stop it
 		return true;
@@ -69,15 +76,13 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		sf::SoundBuffer buff = GetBuffer();
 
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
-		if(!buff.SaveToFile(filename)) _erro(filename << " not saved :( ");
+		if (!buff.SaveToFile(filename)) _erro(filename << " not saved :( ");
 	}
-
-
 
 	virtual void OnStop() {
 		std::cout << "Stop sound recorder" << std::endl;
 	}
-	
+
 };
 
 class cRecorder {

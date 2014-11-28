@@ -12,10 +12,19 @@ class cSoundFrame
     //chrono::system_clock::time_point mAlarmLastTime;
     //bool mInEvent;
     //bool mInAlarm;
+	size_t size(const sf::Int16 *sample);
+
 	
 public:
     void addFrame(const sf::Int16 *pSample);
+    cSoundFrame(const sf::Int16 *pSample);
     ~cSoundFrame();
+
+	sf::Int16* getSample() const {
+		return mSample;
+	}
+
+	size_t size();
 };
 
 #endif
