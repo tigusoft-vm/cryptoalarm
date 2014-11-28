@@ -7,6 +7,14 @@ void cSoundFrame::addFrame(const sf::Int16 *pSample, size_t SamplesCount) {
     this->SamplesCount = SamplesCount;
 }
 
+cSoundFrame::cSoundFrame(const cSoundFrame &other)
+{
+	//_dbg1("cpy constructor");
+	this->SamplesCount = other.SamplesCount;
+	this->mSample = new sf::Int16 [sizeof(other.mSample) / sizeof(sf::Int16)];
+	memcpy(this->mSample, other.mSample, sizeof(other.mSample));
+}
+
 cSoundFrame::~cSoundFrame()
 {
     delete []mSample;

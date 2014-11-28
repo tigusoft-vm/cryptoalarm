@@ -18,6 +18,7 @@ class cSoundFrame
 public:
     void addFrame(const sf::Int16 *pSample, size_t SamplesCount);
     cSoundFrame(const sf::Int16 *pSample, size_t SamplesCount);
+    cSoundFrame(const cSoundFrame &other);
     ~cSoundFrame();
 
 	sf::Int16* getSample() const {

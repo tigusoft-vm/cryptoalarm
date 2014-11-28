@@ -76,10 +76,10 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 
 		if (wasAlarm && !mRawBuffer.empty()) { // XXX:
-			auto bisSample = mergeCBuff();
+			auto bigSample = mergeCBuff();
 			_dbg2("end of mergeCBuff");
 
-			saveBuffToFile(bisSample.get(), mergeSampleCount(), SampleRate, sound->currentDateTime());
+			saveBuffToFile(bigSample.get(), mergeSampleCount(), SampleRate, sound->currentDateTime());
 		}
 
 		// return true to continue the capture, or false to stop it
@@ -87,10 +87,11 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	}
 
 	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename) {
+		_dbg3("Start save to file");
+		_dbg3("size of samples: " << sizeof(Samples));
 		filename += ".wav";
 		sf::SoundBuffer buff;
 		buff.LoadFromSamples(Samples, SamplesCount, STEREO, SampleRate);
-
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
 		if (!buff.SaveToFile(filename)) _erro(filename << " not saved :( ");
 	}
