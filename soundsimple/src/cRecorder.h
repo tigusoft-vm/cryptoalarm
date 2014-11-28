@@ -44,7 +44,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		std::vector<sf::Int16> samplesFromCBuff;
 		for (auto sample : mRawBuffer) {
 			auto chunk = sample.getSamplesVec();
-			samplesFromCBuff.assign(chunk.begin(), chunk.end());
+			for(auto element : chunk) samplesFromCBuff.push_back(element);
 		}
 		return samplesFromCBuff;
 	}
@@ -77,7 +77,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			auto vecOfSamples = mergeCBuff();
 			_dbg1("vecOfSamples size " << vecOfSamples.size());
 			if (!savedFile)
-				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size() * 10, SampleRate, sound->currentDateTime());
+				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 			savedFile = true;
 		}
 		else {
