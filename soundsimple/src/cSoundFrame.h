@@ -7,20 +7,22 @@ using namespace std;
 
 class cSoundFrame
 {
-	//	chrono::system_clock::time_point mBuffStarTime;
-	//chrono::system_clock::time_point mAlarmLastTime;
-	//bool mInEvent;
-	//bool mInAlarm;
 	vector<sf::Int16> SamplesVec;
 
 public:
+	cSoundFrame();
 	cSoundFrame(const sf::Int16 *pSample, size_t SamplesCount);
-	//    cSoundFrame(const cSoundFrame &other);
+	std::chrono::system_clock::time_point mSatrtTime = std::chrono::system_clock::now();
 	~cSoundFrame();
 
 	const vector<sf::Int16>& getSamplesVec() const
 	{
 		return SamplesVec;
+	}
+	
+	const std::chrono::system_clock::time_point getStartTime()
+	{
+		return mSatrtTime;
 	}
 };
 

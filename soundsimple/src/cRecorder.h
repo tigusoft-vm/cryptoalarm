@@ -37,11 +37,13 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	void createAndSaveFrameToCBuff(const sf::Int16* Samples, std::size_t SamplesCount) {
 		cSoundFrame mSoundFrame(Samples, SamplesCount);
 		mRawBuffer.push_back(mSoundFrame);
-
 	}
 
 	std::vector<sf::Int16> mergeCBuff() {
 		std::vector<sf::Int16> samplesFromCBuff;
+		time_t tt;
+		tt = std::chrono::system_clock::to_time_t(mRawBuffer.at(0).getStartTime());
+		_dbg1("time " << ctime(&tt));
 		for (auto sample : mRawBuffer) {
 			auto chunk = sample.getSamplesVec();
 			for(auto element : chunk) samplesFromCBuff.push_back(element);
@@ -67,7 +69,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			mAlarmLastTime = std::chrono::system_clock::now();
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
-			saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
+			//saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 		}
 
 		diffToAlarm = std::chrono::system_clock::now() - mAlarmLastTime;
@@ -76,9 +78,11 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			isEvent = true;
 			auto vecOfSamples = mergeCBuff();
 			_dbg1("vecOfSamples size " << vecOfSamples.size());
-			if (!savedFile)
+			if (!savedFile) {
+				_fact("savedFile = " << savedFile);
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
-			savedFile = true;
+				savedFile = true;
+			}
 		}
 		else {
 			_note("no event");

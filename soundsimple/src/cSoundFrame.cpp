@@ -1,6 +1,10 @@
 #include "cSoundFrame.h"
 #include "libs.h"
 
+cSoundFrame::cSoundFrame() {
+	mSatrtTime = std::chrono::system_clock::now();
+}
+
 cSoundFrame::~cSoundFrame() {
 	// TODO
 }
