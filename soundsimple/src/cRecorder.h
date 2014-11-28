@@ -15,6 +15,8 @@
 #define CBUFF_SIZE 200
 #define STEREO 2
 
+const std::string recDirName = "recordings/";
+
 class cAlarm {
 };
 
@@ -53,18 +55,13 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	 */
 	virtual bool OnProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
 		unsigned int SampleRate = GetSampleRate();
-
-		_dbg3("samples count " << SamplesCount << ", sample rate: " << SampleRate);
 		createAndSaveFrameToCBuff(Samples, SamplesCount);
 
 		auto sound = std::make_shared<cSound>(false);
-
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
-
 		if (wasAlarm) {
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
-			_dbg2("end of mergeCBuff");
 			saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 		}
 
@@ -81,7 +78,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		buff.LoadFromSamples(Samples, SamplesCount, STEREO, SampleRate);
 
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
-		if (!buff.SaveToFile(filename)) _erro(filename << " not saved :( ");
+		if (!buff.SaveToFile(recDirName+filename)) _erro(filename << " not saved :( ");
 	}
 
 	virtual void OnStop() {
@@ -94,9 +91,9 @@ class cRecorder {
 public:
 	cRecorder();
 	virtual ~cRecorder();
+	void startRecording();
 
 	const bool fromMicrophoneMode;
-	void startRecording();
 
 private:
 	cAlarmSoundRecorder Recorder;

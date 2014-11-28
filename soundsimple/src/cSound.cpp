@@ -14,8 +14,8 @@ std::stack<std::string> cSound::alarmsToSend;
 int cSound::n = 0;
 mutex cSound::mtx;
 
-cSound::cSound(bool s) :
-		simulation_(s), minAlarm(1.), energy_(0), confirmation(0), wasAlarm(false)
+cSound::cSound(bool isEvent) :
+		simulation_(false), minAlarm(1.), energy_(0), confirmation(0), wasAlarm(false), isEventNow(isEvent)
 {
 	if (n == 0) createThreadForSendScript();
 	n++;
@@ -244,9 +244,12 @@ void cSound::alarm() {
 	ostringstream message;
 	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation << endl;
 
-	mtx.lock();
-	alarmsToSend.push(message.str());
-	mtx.unlock();
+	// is event, send message
+	if (isEventNow) {
+		mtx.lock(); {
+			alarmsToSend.push(message.str());
+		} mtx.unlock();
+	}
 
 	std::ofstream log;
 	log.open("log.txt", std::ios::app);

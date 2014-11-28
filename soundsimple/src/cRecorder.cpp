@@ -5,13 +5,16 @@
  */
 
 #include "cRecorder.h"
+#include <boost/filesystem.hpp>
 
 using namespace std;
+
 
 cRecorder::cRecorder() :
 		fromMicrophoneMode(true)
 {
 	assert(sf::SoundBufferRecorder::CanCapture()); // audio capture must be supported
+	if (!boost::filesystem::exists(recDirName)) boost::filesystem::create_directory(recDirName);
 }
 
 cRecorder::~cRecorder()

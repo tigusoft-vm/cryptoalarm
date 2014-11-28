@@ -24,6 +24,7 @@
 
 #include <fftw3.h>
 
+#include <boost/filesystem.hpp>
 
 #include "otshell_utils/utils.hpp"
 

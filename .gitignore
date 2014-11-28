@@ -4,6 +4,8 @@ sended.txt
 simplesound
 send.sh
 DartConfiguration.tcl
+recordings/
+*.orig
 
 ### Eclipse ###
 *.pydevproject

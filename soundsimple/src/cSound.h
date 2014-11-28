@@ -27,12 +27,12 @@ public:
 
 	bool ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate);
 	const std::string currentDateTime();
-
 	void sendXMPPNotificationAlarm(const std::string &mess);
 	void alarm();
 
-	const bool simulation_;
-
+	void setSimulationMode() {
+		simulation_ = true;
+	}
 
 	struct alarmData {
 		int from;
@@ -42,24 +42,19 @@ public:
 		double max;
 	};
 
-
 private:
-	const double minAlarm;
 	static std::mutex mtx;
 	static int n;
-	bool wasAlarm;
-
-	std::thread xmppScript;
-
 	static std::stack <std::string> alarmsToSend;
-
-
-
 	static void alarmHandler();
 
-
+	bool simulation_;
+	const double minAlarm;
+	bool wasAlarm;
+	std::thread xmppScript;
 	double energy_;
 	int confirmation;
+	bool isEventNow;
 
 	void createThreadForSendScript();
 	void wait_for_key(); // used in plot function
