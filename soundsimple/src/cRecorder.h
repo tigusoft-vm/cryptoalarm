@@ -15,7 +15,7 @@
 #define CBUFF_SIZE 200
 #define STEREO 2
 #define MONO 1
-#define EVENT_TIME 10
+#define EVENT_TIME 60 // XXX 10
 #define FIRST_FILES_TIME 1
 #define NEXT_FILES_TIME 10
 
@@ -86,23 +86,33 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			
 			// saving last 20s
 			if (!savedMinusFile) {
+				_dbg2("saving 20s file");
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 				savedMinusFile = true;
+				mRawBuffer.clear();
 			}
 			
 			// saving 3 files (1s)
-			else if (mSavedFiles < 3) {
-				
+			else if (mSavedFiles < 3 && mRawBuffer.size() >= FIRST_FILES_TIME * 10) {
+				_dbg2("saving 1s file");
+				++mSavedFiles;
+				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
+				mRawBuffer.clear();
 			}
 			
 			// other files (10s)
-			else {
+			else if (mSavedFiles >= 3 && mRawBuffer.size() >= NEXT_FILES_TIME * 10) {
+				_dbg2("saving 10s file");
+				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
+				mRawBuffer.clear();
 			}
+			
 		}
 		else {
-			_note("no event");
+			_fact("no event");
 			isEvent = false;
 			savedMinusFile = false;
+			mSavedFiles = 0;
 		}
 		// return true to continue the capture, or false to stop it
 		return true;
