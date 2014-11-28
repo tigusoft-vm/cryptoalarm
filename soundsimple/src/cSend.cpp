@@ -28,11 +28,13 @@ void cSend::alarmHandler() {
 			_fact("sending");
 
 			cSound::mtx.lock();
-			string mess = cSound::alarmsToSend.top();
+			{
+				string mess = cSound::alarmsToSend.top();
+			}
 			cSound::alarmsToSend.pop();
 			cSound::mtx.unlock();
 
-			sendXMPPNotificationMessage(mess);
+			sendXMPPNotificationMessage (mess);
 		}
 	}
 }
@@ -51,7 +53,7 @@ void cSend::sendXMPPNotificationMessageInThread(std::string mess) {
 }
 
 void cSend::sendSum(std::string filename) {
-	if(!boost::filesystem::exists(filename)) {
+	if (!boost::filesystem::exists(filename)) {
 		_warn("It seems file: " << filename << " doesn't exist, but I try to send checksum");
 	}
 	// TODO: sholud we use crypto++ library to get this sum?

@@ -48,7 +48,6 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		return samplesFromCBuff;
 	}
 
-
 	/**
 	 * Audio samples are provided to the onProcessSamples function every 100 ms.
 	 * This is currently hard-coded into SFML and you can't change that
@@ -89,9 +88,9 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		filename += ".wav";
 		sf::SoundBuffer buff;
 		buff.LoadFromSamples(Samples, SamplesCount, STEREO, SampleRate);
-
+		assert(buff.GetDuration() != 0);
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
-		if (!buff.SaveToFile(recDirName+filename)) _erro(filename << " not saved :( ");
+		if (!buff.SaveToFile(recDirName + filename)) _erro(filename << " not saved :( ");
 	}
 
 	virtual void OnStop() {

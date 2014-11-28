@@ -217,9 +217,11 @@ void cSound::alarm() {
 
 	// is event, don't send message
 	if (!isEventNow) {
-		mtx.lock(); {
+		mtx.lock();
+		{
 			alarmsToSend.push(message.str());
-		} mtx.unlock();
+		}
+		mtx.unlock();
 	}
 
 	std::ofstream log;

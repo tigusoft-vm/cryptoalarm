@@ -15,14 +15,13 @@
 //#define MIN_CONF 2
 #define MAX_STANDARD_NOISE 250
 
-
 typedef std::vector<double> samples;
 
 class cSend;
 
-class cSound  {
+class cSound {
 	friend class cSend;
-public:
+	public:
 	cSound(bool s);
 	cSound();
 	virtual ~cSound();
@@ -46,7 +45,7 @@ public:
 private:
 	static std::mutex mtx;
 	static int n;
-	static std::stack <std::string> alarmsToSend;
+	static std::stack<std::string> alarmsToSend;
 
 	bool simulation_;
 	const double minAlarm;
@@ -58,7 +57,7 @@ private:
 
 	void createThreadForSendScript();
 	void wait_for_key(); // used in plot function
-	std::shared_ptr<alarmData> getSection(const samples &mag,  int from,  int to, unsigned int SampleRate, size_t N);
+	std::shared_ptr<alarmData> getSection(const samples &mag, int from, int to, unsigned int SampleRate, size_t N);
 	int Interpret(const samples &mag, unsigned int SampleRate, size_t N); // hardcoded values for specific hardware
 	bool IsInRange(double var, double from, double to);
 	void convArrToDouble(double *toArr, const sf::Int16 *fromArr, const size_t &size);

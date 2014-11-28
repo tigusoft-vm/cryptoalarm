@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 cRecorder::cRecorder() :
 		fromMicrophoneMode(true)
 {
