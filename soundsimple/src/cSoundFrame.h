@@ -13,11 +13,11 @@ class cSoundFrame
     //bool mInEvent;
     //bool mInAlarm;
 	size_t size(const sf::Int16 *sample);
-
+	size_t SamplesCount;
 	
 public:
-    void addFrame(const sf::Int16 *pSample);
-    cSoundFrame(const sf::Int16 *pSample);
+    void addFrame(const sf::Int16 *pSample, size_t SamplesCount);
+    cSoundFrame(const sf::Int16 *pSample, size_t SamplesCount);
     ~cSoundFrame();
 
 	sf::Int16* getSample() const {

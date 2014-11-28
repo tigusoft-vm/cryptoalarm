@@ -9,7 +9,6 @@
 
 #include "libs.h"
 #include "cSound.h"
-#include "cAlarmData.h"
 #include "cSoundFrame.h"
 #include <boost/circular_buffer.hpp>
 
@@ -20,8 +19,6 @@ class cAlarm {
 };
 
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
-
-	cAlarmData mAlarmData;
 	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<
 			cSoundFrame>(CBUFF_SIZE);
 
@@ -30,8 +27,8 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		return true;
 	}
 
-	void createAndSaveFrameToCBuff(const sf::Int16* Samples) {
-		cSoundFrame mSoundFrame(Samples);
+	void createAndSaveFrameToCBuff(const sf::Int16* Samples, std::size_t SamplesCount) {
+		cSoundFrame mSoundFrame(Samples, SamplesCount);
 		mRawBuffer.push_back(mSoundFrame);
 		_dbg2("Sound frame size: " << mSoundFrame.size());
 	}
@@ -47,10 +44,10 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	 * (unless you modify SFML itself).
 	 */
 	virtual bool OnProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
-		_dbg3("samples count " << SamplesCount);
-
 		unsigned int SampleRate = GetSampleRate();
-		createAndSaveFrameToCBuff(Samples);
+
+		_dbg3("samples count " << SamplesCount << ", sample rate: " << SampleRate);
+		createAndSaveFrameToCBuff(Samples, SamplesCount);
 
 		auto sound = std::make_shared<cSound>(false);
 		auto wasAlarm = false;
