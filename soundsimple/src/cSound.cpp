@@ -133,14 +133,16 @@ int cSound::Interpret(const samples &mag, unsigned int SampleRate, size_t N) {
 	const double noiseEnergyNow = typicalEnergyNow * 0.3; // a treshold of sound in current sample
 	
 	int noiseLvl=0;
-	_dbg1("typicalEnergyNow"<<typicalEnergyNow);
-	if (typicalEnergyNow > 0.01) ++noiseLvl;
-	if (typicalEnergyNow > 0.02) ++noiseLvl;
-	if (typicalEnergyNow > 0.05) ++noiseLvl;
-	if (typicalEnergyNow > 0.08) ++noiseLvl;
-	if (typicalEnergyNow > 0.10) ++noiseLvl;
-	if (typicalEnergyNow > 0.25) ++noiseLvl;	
-	if (noiseLvl>=3) { _mark("noise"); _mark("Noise! "<<noiseLvl); confLvl += noiseLvl; }
+	
+	if (typicalEnergyNow > 0.01){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
+	if (typicalEnergyNow > 0.02){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
+	if (typicalEnergyNow > 0.05){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
+	if (typicalEnergyNow > 0.08){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
+	if (typicalEnergyNow > 0.10){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
+	if (typicalEnergyNow > 0.25){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
+	if (noiseLvl>=4) { _mark("noise"); _mark("Noise! "<<noiseLvl); confLvl += noiseLvl; }
+	
+	_dbg1("noiseLvl=" << noiseLvl << " typicalEnergyNow"<<typicalEnergyNow);
 
 	const auto range1 = getSection(mag, 550, 1200, SampleRate, N);
 	if (IsInRange(range1->max, 0.85, 1.)) {
