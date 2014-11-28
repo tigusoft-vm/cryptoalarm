@@ -21,6 +21,7 @@ class cAlarm {
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<
 			cSoundFrame>(CBUFF_SIZE);
+	//std::shared_ptr<sf::Int16> mBigSample;
 
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
@@ -33,10 +34,29 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		_dbg2("Sound frame size: " << mSoundFrame.size());
 	}
 
-	void mergeCBuff() {
-
+	std::shared_ptr<sf::Int16> mergeCBuff() {
+		_dbg1("mergeCBuff");
+		size_t size = 0;
+		for (auto frame: mRawBuffer) {
+			size += frame.size();
+		}
+		auto bigBuff = std::shared_ptr<sf::Int16>(new sf::Int16 [size], [](sf::Int16* p){_dbg1("delete bigBuff"); delete []p;});
+		sf::Int16 *ptr = bigBuff.get();
+		for (auto frame: mRawBuffer) {
+			memcpy(ptr, frame.getSample(), frame.size());
+			ptr += frame.size();
+		}
+		
+		return bigBuff;
 	}
 
+	size_t mergeSampleCount() {
+		_dbg1("mergeSampleCount");
+		size_t size = 0;
+		for (auto frame: mRawBuffer) {
+			size += frame.getSamplesCount();
+		}
+	}
 
 	/**
 	 * Audio samples are provided to the onProcessSamples function every 100 ms.
@@ -50,19 +70,20 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		createAndSaveFrameToCBuff(Samples, SamplesCount);
 
 		auto sound = std::make_shared<cSound>(false);
-		auto wasAlarm = false;
-		/*auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
-
+		
+		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
+		//wasAlarm = true;
 		if (wasAlarm) {
-			mergeCBuff();
-
+			auto bisSample = mergeCBuff();
+			_dbg2("end of mergeCBuff");
 			// TODO:
 			sf::SoundBuffer buff = GetBuffer();
+			_dbg2("end of GetBuffer");
 			buff.LoadFromSamples(Samples, SamplesCount, 2, SampleRate);
 
-			mAlarmData.add(Samples, SamplesCount, SampleRate);
-			saveBuffToFile(Samples, SamplesCount, SampleRate, sound->currentDateTime());
-		}*/
+			//mAlarmData.add(Samples, SamplesCount, SampleRate);
+			saveBuffToFile(bisSample.get(), mergeSampleCount(), SampleRate, sound->currentDateTime());
+		}
 
 		// return true to continue the capture, or false to stop it
 		return true;

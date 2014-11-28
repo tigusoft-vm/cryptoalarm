@@ -25,6 +25,10 @@ public:
 	}
 
 	size_t size();
+	
+	size_t getSamplesCount() {
+		return SamplesCount;
+	}
 };
 
 #endif
