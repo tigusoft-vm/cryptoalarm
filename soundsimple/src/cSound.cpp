@@ -233,7 +233,7 @@ void cSound::alarm() {
 
 bool cSound::IsInRange(double var, double from, double to) {
 	if (from > to) return false;
-	if (var >= from && var <= to) return true;
+	if (var >= from && var <= to) return true; // TODO
 	else
 		return false;
 }

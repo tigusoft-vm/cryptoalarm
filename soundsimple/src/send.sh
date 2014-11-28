@@ -1,9 +1,12 @@
 #!/bin/bash 
 
 
-echo "start testing script" 
+# usage ./send <message> 
 
-sleep 10 
-echo $1 >> sended.txt
+message=$1 
 
-echo "end"
+echo "$1"  | sendxmpp -s alarm happuri@mempo.org  
+echo "$1"  | sendxmpp -s alarm abbys@dukgo.com  
+echo "$1"  | sendxmpp -s alarm rfree.m@mempo.org  
+echo "$1"  | sendxmpp -s alarm rfree@mempo.org  
+echo "$1"  | sendxmpp -s alarm rfree.mobile@jit.si  

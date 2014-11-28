@@ -15,7 +15,7 @@
 #define CBUFF_SIZE 200
 #define STEREO 2
 #define MONO 1
-#define EVENT_TIME 60 // XXX 10
+#define EVENT_TIME 10
 #define FIRST_FILES_TIME 1
 #define NEXT_FILES_TIME 10
 
