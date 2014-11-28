@@ -28,6 +28,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	std::chrono::system_clock::time_point mAlarmLastTime;
 	std::chrono::system_clock::duration diffToAlarm;
 	bool isEvent = false;
+	bool savedFile = false;
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
 		return true;
@@ -47,6 +48,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		}
 		return samplesFromCBuff;
 	}
+
 
 	/**
 	 * Audio samples are provided to the onProcessSamples function every 100 ms.
@@ -72,10 +74,16 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		if (diffToAlarm < std::chrono::seconds(EVENT_TIME)) {
 			_note("event");
 			isEvent = true;
+			auto vecOfSamples = mergeCBuff();
+			_dbg1("vecOfSamples size " << vecOfSamples.size());
+			if (!savedFile)
+				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size() * 10, SampleRate, sound->currentDateTime());
+			savedFile = true;
 		}
 		else {
 			_note("no event");
 			isEvent = false;
+			savedFile = false;
 		}
 		// return true to continue the capture, or false to stop it
 		return true;
@@ -89,8 +97,9 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		sf::SoundBuffer buff;
 		buff.LoadFromSamples(Samples, SamplesCount, STEREO, SampleRate);
 		assert(buff.GetDuration() != 0);
+		_dbg2("size of samples(get samples): " << sizeof(buff.GetSamples()));
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
-		if (!buff.SaveToFile(recDirName + filename)) _erro(filename << " not saved :( ");
+		if (!buff.SaveToFile(recDirName+filename)) _erro(filename << " not saved :( ");
 	}
 
 	virtual void OnStop() {
