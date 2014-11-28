@@ -128,6 +128,19 @@ std::vector<double> cSound::calculateFrequencies(unsigned int SampleRate, size_t
 int cSound::Interpret(const samples &mag, unsigned int SampleRate, size_t N) {
 	bool printDebug = false;
 	int confLvl = 0;
+	
+	const double typicalEnergyNow = 3 * getSection(mag, 50, 8000, SampleRate, N)->avg; // totall level of sound/noise
+	const double noiseEnergyNow = typicalEnergyNow * 0.3; // a treshold of sound in current sample
+	
+	int noiseLvl=0;
+	_dbg1("typicalEnergyNow"<<typicalEnergyNow);
+	if (typicalEnergyNow > 0.01) ++noiseLvl;
+	if (typicalEnergyNow > 0.02) ++noiseLvl;
+	if (typicalEnergyNow > 0.05) ++noiseLvl;
+	if (typicalEnergyNow > 0.08) ++noiseLvl;
+	if (typicalEnergyNow > 0.10) ++noiseLvl;
+	if (typicalEnergyNow > 0.25) ++noiseLvl;	
+	if (noiseLvl>=3) { _mark("noise"); _mark("Noise! "<<noiseLvl); confLvl += noiseLvl; }
 
 	const auto range1 = getSection(mag, 550, 1200, SampleRate, N);
 	if (IsInRange(range1->max, 0.85, 1.)) {
@@ -233,9 +246,14 @@ void cSound::alarm() {
 
 bool cSound::IsInRange(double var, double from, double to) {
 	if (from > to) return false;
-	if (var >= from && var <= to) return true; // TODO
-	else
-		return false;
+	//if (var >= from && var <= to) return true; // TODO
+	
+	// if (var >= to) return true; // is too loud? but still
+	
+	if (var >= from) return true; // is loud
+	
+	
+	return false;
 }
 
 void cSound::plotResults(const samples &x, const samples &y) {
