@@ -14,6 +14,7 @@
 
 #define CBUFF_SIZE 200
 #define STEREO 2
+#define EVENT_TIME 10
 
 const std::string recDirName = "recordings/";
 
@@ -24,7 +25,9 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<
 			cSoundFrame>(CBUFF_SIZE);
 	//std::shared_ptr<sf::Int16> mBigSample;
-
+	std::chrono::system_clock::time_point mAlarmLastTime;
+	std::chrono::system_clock::duration diffToAlarm;
+	//std::atomic<bool> isEvent;
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
 		return true;
@@ -60,11 +63,20 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		auto sound = std::make_shared<cSound>(false);
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 		if (wasAlarm) {
+			mAlarmLastTime = std::chrono::system_clock::now();
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
 			saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 		}
 
+		diffToAlarm = std::chrono::system_clock::now() - mAlarmLastTime;
+		if (diffToAlarm < std::chrono::seconds(EVENT_TIME)) {
+			_note("event");
+			
+		}
+		else {
+			_note("no event");
+		}
 		// return true to continue the capture, or false to stop it
 		return true;
 	}
