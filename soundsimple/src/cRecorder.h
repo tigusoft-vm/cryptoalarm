@@ -12,7 +12,7 @@
 #include "cSoundFrame.h"
 #include <boost/circular_buffer.hpp>
 
-#define CBUFF_SIZE 200
+#define CBUFF_SIZE 1024
 #define STEREO 2
 #define EVENT_TIME 10
 
@@ -100,6 +100,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		_dbg2("size of samples(get samples): " << sizeof(buff.GetSamples()));
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
 		if (!buff.SaveToFile(recDirName+filename)) _erro(filename << " not saved :( ");
+		else _note("File saved " << recDirName+filename);
 	}
 
 	virtual void OnStop() {
