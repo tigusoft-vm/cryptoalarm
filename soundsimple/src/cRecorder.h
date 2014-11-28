@@ -16,6 +16,8 @@
 #define STEREO 2
 #define MONO 1
 #define EVENT_TIME 10
+#define FIRST_FILES_TIME 1
+#define NEXT_FILES_TIME 10
 
 const std::string recDirName = "recordings/";
 
@@ -27,9 +29,13 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			cSoundFrame>(CBUFF_SIZE);
 	//std::shared_ptr<sf::Int16> mBigSample;
 	std::chrono::system_clock::time_point mAlarmLastTime;
+	//std::chrono::system_clock::time_point mStartCurrentAlarm;
 	std::chrono::system_clock::duration diffToAlarm;
+	//std::chrono::system_clock::duration mFileLength1 = std::chrono::seconds(1);
+	//std::chrono::system_clock::duration mFileLength2 = std::chrono::seconds(10);
 	bool isEvent = false;
-	bool savedFile = false;
+	bool savedMinusFile = false;
+	unsigned int mSavedFiles = 0;
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
 		return true;
@@ -77,16 +83,26 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			_note("event");
 			isEvent = true;
 			auto vecOfSamples = mergeCBuff();
-			_dbg1("vecOfSamples size " << vecOfSamples.size());
-			if (!savedFile) {
+			
+			// saving last 20s
+			if (!savedMinusFile) {
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
-				savedFile = true;
+				savedMinusFile = true;
+			}
+			
+			// saving 3 files (1s)
+			else if (mSavedFiles < 3) {
+				
+			}
+			
+			// other files (10s)
+			else {
 			}
 		}
 		else {
 			_note("no event");
 			isEvent = false;
-			savedFile = false;
+			savedMinusFile = false;
 		}
 		// return true to continue the capture, or false to stop it
 		return true;
