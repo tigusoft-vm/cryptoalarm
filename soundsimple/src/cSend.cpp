@@ -28,9 +28,7 @@ void cSend::alarmHandler() {
 			_fact("sending");
 
 			cSound::mtx.lock();
-			{
-				string mess = cSound::alarmsToSend.top();
-			}
+			string mess = cSound::alarmsToSend.top();
 			cSound::alarmsToSend.pop();
 			cSound::mtx.unlock();
 
@@ -57,6 +55,6 @@ void cSend::sendSum(std::string filename) {
 		_warn("It seems file: " << filename << " doesn't exist, but I try to send checksum");
 	}
 	// TODO: sholud we use crypto++ library to get this sum?
-	const string checkSumScript = " $(sha512sum recordings/2014-11-28.15\:37\:52.wav | tr \" \" \"-\" )";
+	const string checkSumScript = " $(sha512sum recordings/2014-11-28.15:37:52.wav | tr \" \" \"-\" )";
 	sendXMPPNotificationMessage(checkSumScript);
 }
