@@ -12,8 +12,9 @@
 #include "cSoundFrame.h"
 #include <boost/circular_buffer.hpp>
 
-#define CBUFF_SIZE 1024
+#define CBUFF_SIZE 200
 #define STEREO 2
+#define MONO 1
 #define EVENT_TIME 10
 
 const std::string recDirName = "recordings/";
@@ -69,7 +70,6 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			mAlarmLastTime = std::chrono::system_clock::now();
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
-			//saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 		}
 
 		diffToAlarm = std::chrono::system_clock::now() - mAlarmLastTime;
@@ -79,7 +79,6 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			auto vecOfSamples = mergeCBuff();
 			_dbg1("vecOfSamples size " << vecOfSamples.size());
 			if (!savedFile) {
-				_fact("savedFile = " << savedFile);
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 				savedFile = true;
 			}
@@ -99,7 +98,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		_dbg3("size of samples: " << sizeof(Samples));
 		filename += ".wav";
 		sf::SoundBuffer buff;
-		buff.LoadFromSamples(Samples, SamplesCount, STEREO, SampleRate);
+		buff.LoadFromSamples(Samples, SamplesCount, MONO, SampleRate);
 		assert(buff.GetDuration() != 0);
 		_dbg2("size of samples(get samples): " << sizeof(buff.GetSamples()));
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
