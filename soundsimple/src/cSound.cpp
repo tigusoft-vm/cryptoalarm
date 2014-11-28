@@ -244,8 +244,8 @@ void cSound::alarm() {
 	ostringstream message;
 	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation << endl;
 
-	// is event, send message
-	if (isEventNow) {
+	// is event, don't send message
+	if (!isEventNow) {
 		mtx.lock(); {
 			alarmsToSend.push(message.str());
 		} mtx.unlock();
