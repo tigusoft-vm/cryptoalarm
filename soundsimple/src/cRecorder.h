@@ -42,6 +42,9 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		}
 		_dbg1("all ok with size: " << size);
 		auto bigBuff = std::shared_ptr<sf::Int16>(new sf::Int16 [size], [](sf::Int16* p){_dbg1("delete bigBuff"); delete []p;});
+		_dbg1("bigBuff created");
+		assert(bigBuff != nullptr);
+
 		sf::Int16 *ptr = bigBuff.get();
 		for (auto frame: mRawBuffer) {
 			memcpy(ptr, frame.getSample(), frame.size());
@@ -75,8 +78,9 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 
-		if (wasAlarm && !mRawBuffer.empty()) { // XXX:
-			auto bigSample = mergeCBuff();
+		if (wasAlarm) { 
+			 assert(!mRawBuffer.empty());
+			 auto bigSample = mergeCBuff();
 			_dbg2("end of mergeCBuff");
 
 			saveBuffToFile(bigSample.get(), mergeSampleCount(), SampleRate, sound->currentDateTime());
@@ -92,6 +96,8 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		filename += ".wav";
 		sf::SoundBuffer buff;
 		buff.LoadFromSamples(Samples, SamplesCount, STEREO, SampleRate);
+		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
+
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
 		if (!buff.SaveToFile(filename)) _erro(filename << " not saved :( ");
 	}
