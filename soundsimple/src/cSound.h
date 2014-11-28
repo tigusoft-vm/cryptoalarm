@@ -18,8 +18,10 @@
 
 typedef std::vector<double> samples;
 
+class cSend;
 
-class cSound {
+class cSound  {
+	friend class cSend;
 public:
 	cSound(bool s);
 	cSound();
@@ -27,7 +29,6 @@ public:
 
 	bool ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate);
 	const std::string currentDateTime();
-	void sendXMPPNotificationAlarm(const std::string &mess);
 	void alarm();
 
 	void setSimulationMode() {
@@ -46,7 +47,6 @@ private:
 	static std::mutex mtx;
 	static int n;
 	static std::stack <std::string> alarmsToSend;
-	static void alarmHandler();
 
 	bool simulation_;
 	const double minAlarm;

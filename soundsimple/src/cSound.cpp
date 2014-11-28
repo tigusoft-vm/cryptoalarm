@@ -7,6 +7,8 @@
 #include "cSound.h"
 #include "gnuplot_i.hpp"
 
+#include "cSend.h"
+
 using namespace std;
 
 //vector <string> cSound::alarmData
@@ -22,7 +24,7 @@ cSound::cSound(bool isEvent) :
 }
 void cSound::createThreadForSendScript() {
 	_dbg1(n);
-	xmppScript = thread(&cSound::alarmHandler);
+	xmppScript = thread(&cSend::alarmHandler);
 	xmppScript.detach();
 }
 
@@ -55,28 +57,6 @@ bool cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	fftw_free(out);
 
 	return wasAlarm;
-}
-
-void cSound::alarmHandler() {
-	_info("inf loop below");
-
-	while (true) {
-		_note(alarmsToSend.size());
-		if (alarmsToSend.empty()) sleep(1); // nothing to send
-		else {
-			_fact("sending");
-
-			mtx.lock();
-			string mess = alarmsToSend.top();
-			alarmsToSend.pop();
-			mtx.unlock();
-
-			// sending via xmpp
-			std::stringstream cmd;
-			cmd << "./send.sh \" " << mess << " \" \n";
-			std::system(cmd.str().c_str());
-		}
-	}
 }
 
 bool cSound::detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size) {
@@ -227,15 +207,6 @@ const std::string cSound::currentDateTime() {
 	strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
 
 	return buf;
-}
-
-void cSound::sendXMPPNotificationAlarm(const std::string &mess) {
-	_scope_info("sending XMPP notification");
-
-	std::stringstream cmd;
-	cmd << "./send.sh \" " << mess << "\" " << endl;
-	std::system(cmd.str().c_str());
-
 }
 
 void cSound::alarm() {
