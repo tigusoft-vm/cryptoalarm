@@ -27,7 +27,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	//std::shared_ptr<sf::Int16> mBigSample;
 	std::chrono::system_clock::time_point mAlarmLastTime;
 	std::chrono::system_clock::duration diffToAlarm;
-	//std::atomic<bool> isEvent;
+	bool isEvent = false;
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
 		return true;
@@ -60,7 +60,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		unsigned int SampleRate = GetSampleRate();
 		createAndSaveFrameToCBuff(Samples, SamplesCount);
 
-		auto sound = std::make_shared<cSound>(false);
+		auto sound = std::make_shared<cSound>(isEvent);
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 		if (wasAlarm) {
 			mAlarmLastTime = std::chrono::system_clock::now();
@@ -72,10 +72,11 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		diffToAlarm = std::chrono::system_clock::now() - mAlarmLastTime;
 		if (diffToAlarm < std::chrono::seconds(EVENT_TIME)) {
 			_note("event");
-			
+			isEvent = true;
 		}
 		else {
 			_note("no event");
+			isEvent = false;
 		}
 		// return true to continue the capture, or false to stop it
 		return true;
