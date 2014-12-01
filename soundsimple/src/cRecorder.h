@@ -55,6 +55,7 @@ private:
 
 	std::vector<sf::Int16> mergeCBuff() {
 		std::vector<sf::Int16> samplesFromCBuff;
+		samplesFromCBuff.reserve(4000); // TODO check max number of elements
 		time_t tt;
         tt = std::chrono::system_clock::to_time_t(mRawBuffer.at(0).getStartTime());
 		_dbg1("time " << ctime(&tt));
