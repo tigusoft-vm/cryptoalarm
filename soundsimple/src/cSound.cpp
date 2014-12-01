@@ -67,13 +67,16 @@ bool cSound::detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size)
 	this->confirmation = Interpret(mag, SampleRate, fftw_size);
 	bool isAlarm = false;
 	this->reason = " ";
+	bool justNoise = true;
 
 	if (confirmation >= MIN_CONF) {
 		isAlarm = true;
+		justNoise = false;
 		this->reason += "high confirmation level; ";
 	}
 	if (hasMagHigh(mag)) {
 		isAlarm = true;
+		justNoise = false;
 		this->reason += "detected high magnitude; ";
 	}
 	if (energy_ >= MAX_STANDARD_NOISE) {
@@ -84,11 +87,12 @@ bool cSound::detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size)
 
 		this->method = sendingMethod::MAIL;
 	}
-
 	if (noiseLvl >= MAX_NOISE_LVL) {
 		isAlarm = true;
 		this->reason += "high noise level: " + to_string(noiseLvl) + "; ";
 	}
+
+	if(justNoise) this->method = sendingMethod::MAIL;
 
 	return isAlarm;
 }
@@ -291,7 +295,7 @@ void cSound::alarm() {
 	std::ofstream log;
 	log.open("log.txt", std::ios::app);
 	cout << message.str() + reason << endl;
-	log << message.str() + reason;
+	log << message.str() + reason << endl;
 	log.close();
 }
 

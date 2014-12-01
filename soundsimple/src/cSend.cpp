@@ -28,14 +28,24 @@ void cSend::alarmHandler() {
 			_fact("sending");
 
 			cSound::mtx.lock();
-				string mess = cSound::alarmsToSend.top().first;
-				auto method = cSound::alarmsToSend.top().second;
+				const string mess = cSound::alarmsToSend.top().first;
+				const auto method = cSound::alarmsToSend.top().second;
 				cSound::alarmsToSend.pop();
 			cSound::mtx.unlock();
-
-
-			sendXMPPNotificationMessage (mess);
+			send(method, mess);
 		}
+	}
+}
+
+void cSend::send(cSound::sendingMethod method, const std::string &message) {
+	switch(method) {
+	case cSound::sendingMethod::XMPP:
+		sendXMPPNotificationMessage(message);
+		break;
+	case cSound::sendingMethod::MAIL:
+		_warn("sending messages via mail not implemented yet");
+		// send mail
+		break;
 	}
 }
 
@@ -60,3 +70,5 @@ void cSend::sendSum(std::string filename) {
 	const string checkSumScript = " $(sha512sum recordings/2014-11-28.15:37:52.wav | tr \" \" \"-\" )";
 	sendXMPPNotificationMessage(checkSumScript);
 }
+
+

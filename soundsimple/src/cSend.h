@@ -20,7 +20,7 @@ public:
 	static void sendXMPPNotificationMessage(std::string mess);
 	static void sendXMPPNotificationMessageInThread(std::string mess);
 	static void sendSum(std::string filename);
-
+	static void send(cSound::sendingMethod method, const std::string &message);
 };
 
 #endif /* CSEND_H_ */
