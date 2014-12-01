@@ -274,11 +274,11 @@ void cSound::alarm() {
 	_mark("alarm (confirmations): " << this->confirmation);
 	this->wasAlarm = true;
 	ostringstream message;
-	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation << endl;
+	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation;
 
 	if (simulation_) reason += " <!SIMULATION!>";
-	pair<string, sendingMethod> sending(message.str() + reason, this->method);
 	if (!isEventNow) { 	// is event, don't send message
+		pair<string, sendingMethod> sending(message.str() + reason, this->method);
 
 		mtx.lock();
 		{
@@ -290,8 +290,8 @@ void cSound::alarm() {
 
 	std::ofstream log;
 	log.open("log.txt", std::ios::app);
-	cout << sending.first << endl;
-	log << sending.first + reason;
+	cout << message.str() + reason << endl;
+	log << message.str() + reason;
 	log.close();
 }
 
