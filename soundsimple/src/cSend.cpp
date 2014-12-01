@@ -43,8 +43,8 @@ void cSend::send(cSound::sendingMethod method, const std::string &message) {
 		sendXMPPNotificationMessage(message);
 		break;
 	case cSound::sendingMethod::MAIL:
-		_warn("sending messages via mail not implemented yet");
-		// send mail
+		_warn("sending messages via mail not implemented yet, I send via XMPP");
+		sendXMPPNotificationMessage(message);
 		break;
 	}
 }
