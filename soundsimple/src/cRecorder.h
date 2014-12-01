@@ -27,12 +27,10 @@ class cAlarm {
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<
 			cSoundFrame>(CBUFF_SIZE);
-	//std::shared_ptr<sf::Int16> mBigSample;
+
 	std::chrono::system_clock::time_point mAlarmLastTime;
-	//std::chrono::system_clock::time_point mStartCurrentAlarm;
 	std::chrono::system_clock::duration diffToAlarm;
-	//std::chrono::system_clock::duration mFileLength1 = std::chrono::seconds(1);
-	//std::chrono::system_clock::duration mFileLength2 = std::chrono::seconds(10);
+
 	bool isEvent = false;
 	bool savedMinusFile = false;
 	unsigned int mSavedFiles = 0;
@@ -44,6 +42,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 	void createAndSaveFrameToCBuff(const sf::Int16* Samples, std::size_t SamplesCount) {
 		cSoundFrame mSoundFrame(Samples, SamplesCount);
 		mRawBuffer.push_back(mSoundFrame);
+
 	}
 
 	std::vector<sf::Int16> mergeCBuff() {
@@ -76,6 +75,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			mAlarmLastTime = std::chrono::system_clock::now();
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
+			saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 		}
 
 		diffToAlarm = std::chrono::system_clock::now() - mAlarmLastTime;
