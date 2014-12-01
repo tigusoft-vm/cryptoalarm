@@ -21,7 +21,7 @@ cSoundProperties::~cSoundProperties()
 	// TODO Auto-generated destructor stub
 }
 
-void cSoundProperties::generateChatacteristicData(const samples &mag) {
+void cSoundProperties::generateChatacteristicData(samples &mag) {
 	// 0 ... 20 ... 40 ... 60
 	for (int i = 0; i < mag.size(); i += intervals_) {
 		samples::iterator toIt;
