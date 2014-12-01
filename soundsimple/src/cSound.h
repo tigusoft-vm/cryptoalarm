@@ -14,6 +14,7 @@
 #define MIN_CONF 5
 //#define MIN_CONF 2
 #define MAX_STANDARD_NOISE 250
+#define MAX_NOISE_LVL 5
 
 typedef std::vector<double> samples;
 
@@ -45,8 +46,14 @@ class cSound {
 private:
 	static std::mutex mtx;
 	static int n;
-	static std::stack<std::string> alarmsToSend;
 
+	enum sendingMethod {
+		XMPP, MAIL
+	};
+
+	static std::stack<std::pair<std::string, sendingMethod>> alarmsToSend;
+
+	sendingMethod method;
 	bool simulation_;
 	const double minAlarm;
 	bool wasAlarm;
@@ -54,6 +61,8 @@ private:
 	double energy_;
 	int confirmation;
 	bool isEventNow;
+	int noiseLvl;
+	std::string reason;
 
 	void createThreadForSendScript();
 	void wait_for_key(); // used in plot function

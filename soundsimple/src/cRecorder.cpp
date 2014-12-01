@@ -41,3 +41,7 @@ void cRecorder::waitForExitKey() {
 		if (userInput == "q" || a == 10) break; // why a==10?
 	}
 }
+
+void cRecorder::setLearningMode() {
+	Recorder.setLearnMode(true);
+}

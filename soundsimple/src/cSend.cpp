@@ -28,9 +28,11 @@ void cSend::alarmHandler() {
 			_fact("sending");
 
 			cSound::mtx.lock();
-			string mess = cSound::alarmsToSend.top();
-			cSound::alarmsToSend.pop();
+				string mess = cSound::alarmsToSend.top().first;
+				auto method = cSound::alarmsToSend.top().second;
+				cSound::alarmsToSend.pop();
 			cSound::mtx.unlock();
+
 
 			sendXMPPNotificationMessage (mess);
 		}

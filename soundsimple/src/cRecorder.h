@@ -25,6 +25,13 @@ class cAlarm {
 };
 
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
+public:
+	void setLearnMode(bool learnMode = false)
+			{
+		this->learnMode = learnMode;
+	}
+
+private:
 	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<
 			cSoundFrame>(CBUFF_SIZE);
 
@@ -33,6 +40,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 
 	bool isEvent = false;
 	bool savedMinusFile = false;
+	bool learnMode = false;
 	unsigned int mSavedFiles = 0;
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
@@ -52,11 +60,11 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		_dbg1("time " << ctime(&tt));
 		for (auto sample : mRawBuffer) {
 			auto chunk = sample.getSamplesVec();
-			for(auto element : chunk) samplesFromCBuff.push_back(element);
+			for (auto element : chunk)
+				samplesFromCBuff.push_back(element);
 		}
 		return samplesFromCBuff;
 	}
-
 
 	/**
 	 * Audio samples are provided to the onProcessSamples function every 100 ms.
@@ -70,12 +78,12 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		createAndSaveFrameToCBuff(Samples, SamplesCount);
 
 		auto sound = std::make_shared<cSound>(isEvent);
+		if (learnMode) sound->setSimulationMode();
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 		if (wasAlarm) {
 			mAlarmLastTime = std::chrono::system_clock::now();
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
-			saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 		}
 
 		diffToAlarm = std::chrono::system_clock::now() - mAlarmLastTime;
@@ -83,7 +91,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 			_note("event");
 			isEvent = true;
 			auto vecOfSamples = mergeCBuff();
-			
+
 			// saving last 20s
 			if (!savedMinusFile) {
 				_dbg2("saving 20s file");
@@ -91,7 +99,7 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 				savedMinusFile = true;
 				mRawBuffer.clear();
 			}
-			
+
 			// saving 3 files (1s)
 			else if (mSavedFiles < 3 && mRawBuffer.size() >= FIRST_FILES_TIME * 10) {
 				_dbg2("saving 1s file");
@@ -99,14 +107,14 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 				mRawBuffer.clear();
 			}
-			
+
 			// other files (10s)
 			else if (mSavedFiles >= 3 && mRawBuffer.size() >= NEXT_FILES_TIME * 10) {
 				_dbg2("saving 10s file");
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
 				mRawBuffer.clear();
 			}
-			
+
 		}
 		else {
 			_fact("no event");
@@ -128,8 +136,9 @@ class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 		assert(buff.GetDuration() != 0);
 		_dbg2("size of samples(get samples): " << sizeof(buff.GetSamples()));
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
-		if (!buff.SaveToFile(recDirName+filename)) _erro(filename << " not saved :( ");
-		else _note("File saved " << recDirName+filename);
+		if (!buff.SaveToFile(recDirName + filename)) _erro(filename << " not saved :( ");
+		else
+			_note("File saved " << recDirName+filename);
 	}
 
 	virtual void OnStop() {
@@ -143,6 +152,7 @@ public:
 	cRecorder();
 	virtual ~cRecorder();
 	void startRecording();
+	void setLearningMode();
 
 	const bool fromMicrophoneMode;
 

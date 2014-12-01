@@ -11,17 +11,18 @@
 
 using namespace std;
 
-//vector <string> cSound::alarmData
-std::stack<std::string> cSound::alarmsToSend;
+std::stack<std::pair<std::string, cSound::sendingMethod>> cSound::alarmsToSend;
 int cSound::n = 0;
 mutex cSound::mtx;
 
 cSound::cSound(bool isEvent) :
-		simulation_(false), minAlarm(1.), energy_(0), confirmation(0), wasAlarm(false), isEventNow(isEvent)
+		simulation_(false), minAlarm(1.), energy_(0), confirmation(0),
+				wasAlarm(false), isEventNow(isEvent), noiseLvl(0), method(sendingMethod::XMPP)
 {
 	if (n == 0) createThreadForSendScript();
 	n++;
 }
+
 void cSound::createThreadForSendScript() {
 	_dbg1(n);
 	xmppScript = thread(&cSend::alarmHandler);
@@ -48,8 +49,11 @@ bool cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	// alarm
 	if (detectAlarm(mag, SampleRate, fftw_size)) alarm();
 
-	// plot results
-	if (simulation_) plotResults(freq, mag);
+//	// plot results
+//	if (simulation_) {
+//		//dealWithData(freq, mag);
+//		plotResults(freq, mag);
+//	}
 
 	// remove fftw data
 	fftw_destroy_plan(p);
@@ -61,8 +65,32 @@ bool cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 
 bool cSound::detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size) {
 	this->confirmation = Interpret(mag, SampleRate, fftw_size);
-	if (confirmation >= MIN_CONF || hasMagHigh(mag) || energy_ >= MAX_STANDARD_NOISE) return true;
-	return false;
+	bool isAlarm = false;
+	this->reason = " ";
+
+	if (confirmation >= MIN_CONF) {
+		isAlarm = true;
+		this->reason += "high confirmation level; ";
+	}
+	if (hasMagHigh(mag)) {
+		isAlarm = true;
+		this->reason += "detected high magnitude; ";
+	}
+	if (energy_ >= MAX_STANDARD_NOISE) {
+		isAlarm = true;
+		this->reason += "energy [" + to_string(energy_) + "]"
+				+ " higher than MAX_STANDARD_NOISE [" + to_string(MAX_STANDARD_NOISE)
+				+ "]; ";
+
+		this->method = sendingMethod::MAIL;
+	}
+
+	if (noiseLvl >= MAX_NOISE_LVL) {
+		isAlarm = true;
+		this->reason += "high noise level: " + to_string(noiseLvl) + "; ";
+	}
+
+	return isAlarm;
 }
 
 bool cSound::hasMagHigh(samples mag) {
@@ -128,21 +156,39 @@ std::vector<double> cSound::calculateFrequencies(unsigned int SampleRate, size_t
 int cSound::Interpret(const samples &mag, unsigned int SampleRate, size_t N) {
 	bool printDebug = false;
 	int confLvl = 0;
-	
+
 	const double typicalEnergyNow = 3 * getSection(mag, 50, 8000, SampleRate, N)->avg; // totall level of sound/noise
 	const double noiseEnergyNow = typicalEnergyNow * 0.3; // a treshold of sound in current sample
-	
-	int noiseLvl=0;
-	
-	if (typicalEnergyNow > 0.01){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
-	if (typicalEnergyNow > 0.02){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
-	if (typicalEnergyNow > 0.05){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
-	if (typicalEnergyNow > 0.08){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
-	if (typicalEnergyNow > 0.10){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
-	if (typicalEnergyNow > 0.25){ _mark("Noise lvl " << noiseLvl); ++noiseLvl;}
-	if (noiseLvl>=4) { _mark("noise"); _mark("Noise! "<<noiseLvl); confLvl += noiseLvl; }
-	
-	_dbg1("noiseLvl=" << noiseLvl << " typicalEnergyNow"<<typicalEnergyNow);
+
+	if (typicalEnergyNow > 0.01) {
+		_info("Noise lvl " << noiseLvl);
+		++noiseLvl;
+	}
+	if (typicalEnergyNow > 0.02) {
+		_info("Noise lvl " << noiseLvl);
+		++noiseLvl;
+	}
+	if (typicalEnergyNow > 0.05) {
+		_info("Noise lvl " << noiseLvl);
+		++noiseLvl;
+	}
+	if (typicalEnergyNow > 0.08) {
+		_info("Noise lvl " << noiseLvl);
+		++noiseLvl;
+	}
+	if (typicalEnergyNow > 0.10) {
+		_info("Noise lvl " << noiseLvl);
+		++noiseLvl;
+	}
+	if (typicalEnergyNow > 0.25) {
+		_info("Noise lvl " << noiseLvl);
+		++noiseLvl;
+	}
+	if (noiseLvl >= 4) {
+		_info("noise");_info("Noise! "<<noiseLvl);
+	}
+
+	_dbg1("noiseLvl=" << noiseLvl << " typicalEnergyNow "<<typicalEnergyNow);
 
 	const auto range1 = getSection(mag, 550, 1200, SampleRate, N);
 	if (IsInRange(range1->max, 0.85, 1.)) {
@@ -230,31 +276,33 @@ void cSound::alarm() {
 	ostringstream message;
 	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation << endl;
 
-	// is event, don't send message
-	if (!isEventNow) {
+	if (simulation_) reason += " <!SIMULATION!>";
+	pair<string, sendingMethod> sending(message.str() + reason, this->method);
+	if (!isEventNow) { 	// is event, don't send message
+
 		mtx.lock();
 		{
-			alarmsToSend.push(message.str());
+
+			alarmsToSend.push(sending);
 		}
 		mtx.unlock();
 	}
 
 	std::ofstream log;
 	log.open("log.txt", std::ios::app);
-	cout << message.str() << endl;
-	log << message.str();
+	cout << sending.first << endl;
+	log << sending.first + reason;
 	log.close();
 }
 
 bool cSound::IsInRange(double var, double from, double to) {
 	if (from > to) return false;
 	//if (var >= from && var <= to) return true; // TODO
-	
+
 	// if (var >= to) return true; // is too loud? but still
-	
+
 	if (var >= from) return true; // is loud
-	
-	
+
 	return false;
 }
 
@@ -268,13 +316,14 @@ void cSound::plotResults(const samples &x, const samples &y) {
 
 		//g1.set_style("points").plot_xy(magX,magRange,"magnitude");
 
-		if (simulation_) wait_for_key();
-		else
-			sleep(2);
+		wait_for_key();
+//		thread waitTh(&cSound::wait_for_key, this);
+//		waitTh.detach();
 	}
 	catch (GnuplotException & ge) {
 		cout << ge.what() << endl;
 	}
+	_dbg1("end of plotting func");
 }
 
 void cSound::wait_for_key() {
