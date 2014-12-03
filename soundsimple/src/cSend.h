@@ -21,6 +21,7 @@ public:
 	static void sendXMPPNotificationMessageInThread(std::string mess);
 	static void sendSum(std::string filename);
 	static void send(cSound::sendingMethod method, const std::string &message);
+    static void sendMailNotificationMessage(std::string mess);
 };
 
 #endif /* CSEND_H_ */

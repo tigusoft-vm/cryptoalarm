@@ -43,14 +43,14 @@ void cSend::send(cSound::sendingMethod method, const std::string &message) {
 		sendXMPPNotificationMessage(message);
 		break;
 	case cSound::sendingMethod::MAIL:
-		_warn("sending messages via mail not implemented yet, I send via XMPP");
-		sendXMPPNotificationMessage(message);
+        sendMailNotificationMessage(message);
 		break;
 	}
 }
 
+
 void cSend::sendXMPPNotificationMessage(std::string mess) {
-	const string sendScript = "./send.sh ";
+    const string sendScript = "./send.sh ";
 	const string q = " \" ";
 	_info("cmd");
 	const string cmd = sendScript + q + mess + q;
@@ -71,4 +71,29 @@ void cSend::sendSum(std::string filename) {
 	sendXMPPNotificationMessage(checkSumScript);
 }
 
-
+void cSend::sendMailNotificationMessage(std::string mess) {
+    const string sendScript = "./sendmail.py ";
+    const string q = " \" ";
+    _info("cmd");
+    std::list<std::string> attachList; // all *.tar.gz files in . dir
+    boost::filesystem::directory_iterator dirIterator(".");
+    boost::filesystem::directory_iterator endIterator;
+    while (dirIterator != endIterator) {
+        if (boost::filesystem::is_regular_file(dirIterator->status())) {
+            std::stringstream ss;
+            std::string fileName;
+            ss << *dirIterator;
+            ss >> fileName;
+            if (fileName.find(".tar.gz") != std::string::npos) {
+                attachList.emplace_back(std::move(fileName));
+            }
+        }
+        dirIterator++;
+    }
+    string cmd = sendScript + q + mess + q;
+    for (auto att : attachList) {
+        cmd += " ";
+        cmd += att;
+    }
+    std::system(cmd.c_str());
+}
