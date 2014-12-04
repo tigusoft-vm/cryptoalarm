@@ -22,6 +22,7 @@ public:
 	static void sendSum(std::string filename);
 	static void send(cSound::sendingMethod method, const std::string &message);
     static void sendMailNotificationMessage(std::string mess, std::string rec);
+    static void sendMailHandleErrors(std::string toSend, int n);
     static void execute(std::string cmd);
 
 };

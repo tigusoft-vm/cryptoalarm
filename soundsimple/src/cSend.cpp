@@ -74,8 +74,28 @@ void cSend::sendMailNotificationMessage(std::string mess, std::string rec) {
 	const string q = " \"  ";
 	const string cmd = sendScript + " mail " + q + mess +  q + rec;
 	_dbg2(cmd);
-	execute(cmd);
 
+	thread systh(&cSend::sendMailHandleErrors, cmd.c_str(), 0);
+	systh.detach();
+
+}
+
+void cSend::sendMailHandleErrors(std::string toSend, int n) {
+	auto err = std::system(toSend.c_str());
+	// log toSend
+	if(err == 0) {
+		// all ok, log this
+	}
+	else {
+		if(!n) {
+			_erro("Problem with sending, I try send this once again");
+			sendMailHandleErrors(toSend, ++n);
+		}
+		else {
+			_erro("Can't send e-mail, I send notification via XMPP");
+			sendXMPPNotificationMessageInThread(toSend);
+		}
+	}
 }
 
 void cSend::execute(std::string cmd)  {
