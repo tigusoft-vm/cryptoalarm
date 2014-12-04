@@ -49,11 +49,11 @@ bool cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	// alarm
 	if (detectAlarm(mag, SampleRate, fftw_size)) alarm();
 
-//	// plot results
-//	if (simulation_) {
-//		//dealWithData(freq, mag);
-//		plotResults(freq, mag);
-//	}
+	// plot results
+	if (simulation_) {
+		//dealWithData(freq, mag);
+		//plotResults(freq, mag);
+	}
 
 	// remove fftw data
 	fftw_destroy_plan(p);

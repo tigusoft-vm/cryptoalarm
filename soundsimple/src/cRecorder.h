@@ -90,6 +90,7 @@ private:
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
 			this->message = sound->getMessage();
+			_info(message);
 		}
 
 		diffToAlarm = std::chrono::steady_clock::now() - mAlarmLastTime;
@@ -122,7 +123,6 @@ private:
 
 		}
 		else {
-			_fact("no event");
 			isEvent = false;
 			savedMinusFile = false;
 			mSavedFiles = 0;

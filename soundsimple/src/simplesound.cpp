@@ -7,7 +7,6 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 	cRecorder rec;
-	rec.setLearningMode();
 	rec.startRecording();
 
 	return 0;

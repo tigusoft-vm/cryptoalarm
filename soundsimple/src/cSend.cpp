@@ -73,6 +73,7 @@ void cSend::sendSum(std::string filename) {
 void cSend::sendMailNotificationMessage(std::string mess, std::string rec) {
 	const string q = " \"  ";
 	const string cmd = sendScript + " mail " + q + mess +  q + rec;
+	_dbg2(cmd);
 	execute(cmd);
 
 }
