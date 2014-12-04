@@ -27,7 +27,7 @@ class cAlarm {
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 public:
 	void setLearnMode(bool learnMode = false)
-			{
+	{
 		this->learnMode = learnMode;
 	}
 
@@ -55,7 +55,7 @@ private:
 
 	std::vector<sf::Int16> mergeCBuff() {
 		std::vector<sf::Int16> samplesFromCBuff;
-		samplesFromCBuff.reserve(4000); // TODO check max number of elements
+		samplesFromCBuff.reserve(1000000);
 		time_t tt;
         tt = std::chrono::system_clock::to_time_t(mRawBuffer.at(0).getStartTime());
 		_dbg1("time " << ctime(&tt));
