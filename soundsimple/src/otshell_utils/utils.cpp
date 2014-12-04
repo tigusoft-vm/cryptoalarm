@@ -10,6 +10,8 @@
 #include <cctype>
 #include <locale>
 #include <fstream>
+#include <iostream>
+#include <iomanip>
 
 #include "utils.hpp"
 
@@ -76,12 +78,35 @@ std::string & trim(std::string &s) {
 	return ltrim(rtrim(s));
 }
 
+std::string get_current_time()
+{
+	std::stringstream stream;
+	struct tm * date;
+
+	std::chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+	time_t time_now;
+	time_now = std::chrono::high_resolution_clock::to_time_t(now);
+	date = std::localtime(& time_now);
+
+	char date_buff[32];
+	std::strftime(date_buff, sizeof(date_buff), "%d-%b-%Y %H:%M:%S.", date);
+	stream << date_buff;
+
+	std::chrono::high_resolution_clock::duration duration = now.time_since_epoch();
+	int64_t micro = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+	micro %= 1000000;
+	stream << std::setfill('0') << std::setw(3) << micro;
+
+	return stream.str();
+}
 
 cNullstream g_nullstream; // extern a stream that does nothing (eats/discards data)
 
 std::mutex gLoggerGuard; // extern
 
 // ====================================================================
+
+namespace nDetail {
 
 const char* DbgShortenCodeFileName(const char *s) {
 	const char *p = s;
@@ -95,6 +120,10 @@ const char* DbgShortenCodeFileName(const char *s) {
 	}
 	return a;
 }
+
+}
+
+// a workaround for MSVC compiler; e.g. see https://bugs.webkit.org/show_bug.cgi?format=multiple&id=125795
 #ifndef _MSC_VER
 template<typename T, typename ...Args>
 std::unique_ptr<T> make_unique( Args&& ...args )
@@ -167,22 +196,24 @@ bool cFilesystemUtils::CreateDirTree(const std::string & dir, bool only_below) {
 }
 // ====================================================================
 
+namespace nDetail {
+
 cDebugScopeGuard::cDebugScopeGuard() : mLevel(-1) {
 }
 
 cDebugScopeGuard::~cDebugScopeGuard() {
 	if (mLevel != -1) {
-		nOT::nUtils::gLoggerGuard.lock();
-		gCurrentLogger.write_stream(mLevel,mChan) << mCodeStamp << ' ' <<  mMsg << " ... END" << gCurrentLogger.endline() << std::flush;
-		nOT::nUtils::gLoggerGuard.unlock();
+		gCurrentLogger.write_stream(mLevel,mChan) << mMsg << " ... end" << gCurrentLogger.endline() << std::flush;
 	}
 }
 
-void cDebugScopeGuard::Assign(const string &chan, const int level, const string &msg, const string &codeStamp) {
-	mChan = chan;
-	mLevel = level;
-	mMsg = msg; 	mCodeStamp = codeStamp;
+void cDebugScopeGuard::Assign(const string &chan, const int level, const string &msg) {
+	mChan=chan;
+	mLevel=level;
+	mMsg=msg;
 }
+
+}; // namespace nDetail
 
 // ====================================================================
 
@@ -287,15 +318,15 @@ std::string cLogger::icon(int level) const {
 
 	using namespace zkr;
 
-	if (level >= 100) return cc::back::red          + ToStr(cc::fore::black) + ToStr("ERROR ") + ToStr(cc::fore::lightyellow) + ' ' ;
-	if (level >=  90) return cc::back::lightyellow  + ToStr(cc::fore::black) + ToStr("Warn  ") + ToStr(cc::fore::red)+ ' ' ;
-	if (level >=  80) return cc::back::lightmagenta + ToStr(cc::fore::black) + ToStr("MARK  ") + ' '; //+ zkr::cc::console + ToStr(cc::fore::lightmagenta)+ " ";
-	if (level >=  75) return cc::back::lightyellow  + ToStr(cc::fore::black) + ToStr("FACT  ") + zkr::cc::console + ToStr(cc::fore::lightyellow)+ " ";
-	if (level >=  70) return cc::fore::green    + ToStr("Note   ");
-	if (level >=  50) return cc::fore::cyan     + ToStr("info   ");
-	if (level >=  40) return cc::fore::lightwhite  + ToStr("dbg    ");
-	if (level >=  30) return cc::fore::lightblue   + ToStr("dbg    ");
-	if (level >=  20) return cc::fore::blue        + ToStr("dbg    ");
+	if (level >= 100) return cc::back::red     + ToStr(cc::fore::black) + ToStr("ERROR ") + ToStr(cc::fore::lightyellow) + " " ;
+	if (level >=  90) return cc::back::lightyellow  + ToStr(cc::fore::black) + ToStr("Warn  ") + ToStr(cc::fore::red)+ " " ;
+	if (level >=  80) return cc::back::lightmagenta + ToStr(cc::fore::black) + ToStr("MARK  "); //+ zkr::cc::console + ToStr(cc::fore::lightmagenta)+ " ";
+	if (level >=  75) return cc::back::lightyellow + ToStr(cc::fore::black) + ToStr("FACT ") + zkr::cc::console + ToStr(cc::fore::lightyellow)+ " ";
+	if (level >=  70) return cc::fore::green    + ToStr("Note  ");
+	if (level >=  50) return cc::fore::cyan   + ToStr("info  ");
+	if (level >=  40) return cc::fore::lightwhite    + ToStr("dbg   ");
+	if (level >=  30) return cc::fore::lightblue   + ToStr("dbg   ");
+	if (level >=  20) return cc::fore::blue    + ToStr("dbg   ");
 
 	return "  ";
 }
@@ -320,27 +351,6 @@ int cLogger::Thread2Number(const std::thread::id id) {
 // ====================================================================
 // object gCurrentLogger is defined later - in global namespace below
 
-// ====================================================================
-// debug - counters, graphs
-
-class cCounter {
-private:
-	int tmp;
-	int tmp2;
-
-	//int tmp2;
-
-	void AAA();
-	void method();
-	void BBBBBB();
-
-
-	void func_rfree_test();
-	void func_rfree_test2();
-
-};
-
-// _data("net/peers/count", 3.14);
 
 // ====================================================================
 // vector debug
@@ -384,6 +394,7 @@ std::string EscapeString(const std::string &s) {
 
 	return newStr.str();
 }
+
 
 bool CheckIfBegins(const std::string & beggining, const std::string & all) {
 	if (all.compare(0, beggining.length(), beggining) == 0) {
@@ -484,89 +495,14 @@ bool checkPrefix(const string & str, char prefix) {
 }
 
 // ====================================================================
-// nUse utils
-
-string SubjectType2String(const eSubjectType & type) {
-	using subject = eSubjectType;
-
-	switch (type) {
-	case subject::Account:
-		return "Account";
-	case subject::Asset:
-			return "Asset";
-	case subject::User:
-			return "User";
-	case subject::Server:
-			return "Server";
-	case subject::Unknown:
-				return "Unknown";
-	}
-	return "";
-}
-
-eSubjectType String2SubjectType(const string & type) {
-	using subject = eSubjectType;
-
-	if (type == "Account")
-		return subject::Account;
-	if (type == "Asset")
-			return subject::Asset;
-	if (type == "User")
-			return subject::User;
-	if (type == "Server")
-			return subject::Server;
-
-	return subject::Unknown;
-}
-
-// ====================================================================
 // operation on files
 
-bool cConfigManager::Load(const string & fileName, map<eSubjectType, string> & configMap){
-	_dbg1("Loading defaults.");
-
-	std::ifstream inFile(fileName.c_str());
-	if( inFile.good() && !(inFile.peek() == std::ifstream::traits_type::eof()) ) {
-		string line;
-		while( std::getline (inFile, line) ) {
-			_dbg2("Line: ["<<line<<"]");
-			vector<string> vec = SplitString(line);
-			if (vec.size() == 2) {
-			_dbg3("config2:"<<vec.at(0)<<","<<vec.at(1));
-				configMap.insert ( std::pair<eSubjectType, string>( String2SubjectType( vec.at(0) ), vec.at(1) ) );
-			}
-			else {
-			_dbg3("config1:"<<vec.at(0));
-				configMap.insert ( std::pair<eSubjectType, string>( String2SubjectType( vec.at(0) ), "-" ) );
-			}
-		}
-		_dbg1("Finished loading");
-		return true;
-	}
-	_dbg1("Unable to load");
-	return false;
-}
-
-void cConfigManager::Save(const string & fileName, const map<eSubjectType, string> & configMap) {
-	_dbg1("Will save config");
-
-	std::ofstream outFile(fileName.c_str());
-	for (auto pair : configMap) {
-		_dbg2("Got: "<<SubjectType2String(pair.first)<<","<<pair.second);
-		outFile << SubjectType2String(pair.first) << " ";
-		outFile << pair.second;
-		outFile << endl;
-		_dbg3("line saved");
-	}
-	_dbg1("All saved");
-}
-
-cConfigManager configManager;
 
 #ifdef __unix
 
 void cEnvUtils::GetTmpTextFile() {
-	char filename[] = "/tmp/otcli_text.XXXXXX";
+	// TODO make this name configurable (depending on project)
+	char filename[] = "/tmp/otshellutils_text.XXXXXX";
 	fd = mkstemp(filename);
 	if (fd == -1) {
 		_erro("Can't create the file: " << filename);
@@ -629,46 +565,6 @@ void hintingToTxt(std::fstream & file, string command, vector<string> &commands)
 		file<<endl;
 	}
 }
-void generateQuestions (std::fstream & file, string command)  {
-	if(file.good()) {
-			file <<command<<endl;
-			file.flush();
-	}
-}
-
-void generateAnswers (std::fstream & file, string command, vector<string> &completions) {
-		char c=command.back();
-		size_t i=command.size()-1;
-		string subcommand=command.erase(i);
-		vector <string> newcompletions;
-		for(auto a: completions) {
-			newcompletions.push_back(a);
-		}
-		if(file.good())
-		{
-			while(i>0){
-		  if(c!=' ') {
-						file <<subcommand<< "~"<<endl;
-						for(auto a: newcompletions) {
-							file<<a<<" ";
-						}
-						file<<endl;
-						i=i-1;
-						c=subcommand.back();
-						subcommand=subcommand.erase(i);
-					}
-		else if(c==' ') {
-						newcompletions.clear();
-						size_t j=subcommand.find(" ");
-						string com = subcommand.substr(j+1);
-						newcompletions.push_back(com);
-						i=i-1;
-						c=subcommand.back();
-						subcommand=subcommand.erase(i);
-					}
-			}
-		}
-	}
 
 string stringToColor(const string &hash) {
   // Generete vector with all possible light colors
@@ -690,14 +586,6 @@ string stringToColor(const string &hash) {
   return lightColors.at( color );
 }
 
-string FindMapValue(const map<string, string> & map, const string value) {
-	for ( auto p : map ) {
-		if (p.second == value) {
-			return p.first;
-		}
-	}
-	return "";
-}
 
 // ====================================================================
 // algorthms

@@ -2,7 +2,6 @@
 /// @author rfree (current maintainer in monero.cc project)
 /// @brief various general utils taken from (and relate to) otshell project, including loggiang/debug
 
-
 /* See other files here for the LICENCE that applies here. */
 
 #include "ccolor.hpp"
@@ -14,13 +13,13 @@
 	#include <unistd.h>
 #endif
 
-//#ifndef CFG_WITH_TERMCOLORS
-//	#error "You requested to turn off terminal colors (CFG_WITH_TERMCOLORS), however currently they are hardcoded (this option to turn them off is not yet implemented)."
-//#endif
+#ifndef CFG_WITH_TERMCOLORS
+	//#error "You requested to turn off terminal colors (CFG_WITH_TERMCOLORS), however currently they are hardcoded (this option to turn them off is not yet implemented)."
+#endif
 
+///Macros related to automatic deduction of class name etc; 
 #define MAKE_CLASS_NAME(NAME) private: static std::string GetObjectName() { return #NAME; }
 #define MAKE_STRUCT_NAME(NAME) private: static std::string GetObjectName() { return #NAME; } public:
-
 
 namespace nOT {
 
@@ -31,19 +30,24 @@ class myexception : public std::runtime_error {
 	public:
 		myexception(const char * what);
 		myexception(const std::string &what);
-//		virtual ~myexception();
+        //virtual ~myexception();
 		virtual void Report() const;
 };
 
+/// @macro Use this macro INJECT_OT_COMMON_USING_NAMESPACE_COMMON_1 as a shortcut for various using std::string etc.
 INJECT_OT_COMMON_USING_NAMESPACE_COMMON_1; // <=== namespaces
 
 // ======================================================================================
-// text trimming
-std::string & ltrim(std::string &s);
-std::string & rtrim(std::string &s);
-std::string & trim(std::string &s);
+/// text trimming functions (they do mutate the passes string); they trim based on std::isspace. also return it's reference again
+/// http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+std::string & trim(std::string &s); ///< trim text http://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+std::string & ltrim(std::string &s); ///< left trim
+std::string & rtrim(std::string &s); ///< right trim
 
 // ======================================================================================
+
+std::string get_current_time();
+
 // string conversions
 template <class T>
 std::string ToStr(const T & obj) {
@@ -51,6 +55,7 @@ std::string ToStr(const T & obj) {
 	oss << obj;
 	return oss.str();
 }
+
 struct cNullstream : std::ostream {
 	cNullstream() : std::ios(0), std::ostream(0) {}
 };
@@ -62,13 +67,13 @@ extern cNullstream g_nullstream; // a stream that does nothing (eats/discards da
 
 extern std::mutex gLoggerGuard;
 
-#define _debug_level_c_impl(CHANNEL,LEVEL,VAR,SKIP_LOCK) do { if (_dbg_ignore< LEVEL) { \
-	if (!SKIP_LOCK) nOT::nUtils::gLoggerGuard.lock(); \
-	gCurrentLogger.write_stream(LEVEL,CHANNEL) << OT_CODE_STAMP << ' ' << VAR << gCurrentLogger.endline() << std::flush; \
-	if (!SKIP_LOCK) nOT::nUtils::gLoggerGuard.unlock(); \
-	} } while(0)
 
-#define _debug_level_c(CHANNEL,LEVEL,VAR) _debug_level_c_impl(CHANNEL,LEVEL,VAR,false)
+
+#define _debug_level_c(CHANNEL,LEVEL,VAR) do { if (_dbg_ignore< LEVEL) { \
+	nOT::nUtils::gLoggerGuard.try_lock(); \
+	gCurrentLogger.write_stream(LEVEL,CHANNEL) << nOT::nUtils::get_current_time() << ' ' << OT_CODE_STAMP << ' ' << VAR << gCurrentLogger.endline() << std::flush; \
+	nOT::nUtils::gLoggerGuard.unlock(); \
+	} } while(0)
 
 #define _debug_level(LEVEL,VAR) _debug_level_c("",LEVEL,VAR)
 
@@ -94,18 +99,13 @@ extern std::mutex gLoggerGuard;
 
 // lock // because od VAR
 #define _scope_debug_level_c(CHANNEL,LEVEL,VAR) \
-	nOT::nUtils::cDebugScopeGuard debugScopeGuard; \
-	{ \
-		std::ostringstream debug_detail_oss; /* for the VAR string */ \
-		std::ostringstream code_stamp_oss; /* for line/file etc string */ \
-		debug_detail_oss << VAR; \
-		code_stamp_oss << OT_CODE_STAMP ; \
-		nOT::nUtils::gLoggerGuard.lock(); try { \
-			if (_dbg_ignore<LEVEL) { debugScopeGuard.Assign(CHANNEL,LEVEL, debug_detail_oss.str(), code_stamp_oss.str()); } \
-			if (_dbg_ignore<LEVEL) { _debug_level_c_impl(CHANNEL,LEVEL,debug_detail_oss.str() + " ... BEGIN", true); } \
-		} catch (...) { nOT::nUtils::gLoggerGuard.unlock(); throw ; } nOT::nUtils::gLoggerGuard.unlock(); \
-	}
-
+	std::ostringstream debug_detail_oss; \
+	nOT::nUtils::gLoggerGuard.try_lock(); \
+	debug_detail_oss << OT_CODE_STAMP << ' ' << VAR ; \
+	nOT::nUtils::nDetail::cDebugScopeGuard debugScopeGuard; \
+	if (_dbg_ignore<LEVEL) debugScopeGuard.Assign(CHANNEL,LEVEL, debug_detail_oss.str()); \
+	if (_dbg_ignore<LEVEL) _debug_level_c(CHANNEL,LEVEL,debug_detail_oss.str() + " ... begin"); \
+	nOT::nUtils::gLoggerGuard.unlock();
 #define _scope_debug_level(LEVEL,VAR) _scope_debug_level_c("",LEVEL,VAR)
 
 #define _scope_dbg1(VAR) _scope_debug_level( 20,VAR)
@@ -116,49 +116,59 @@ extern std::mutex gLoggerGuard;
 #define _scope_fact(VAR) _scope_debug_level( 75,VAR) // interesting event
 #define _scope_mark(VAR) _scope_debug_level( 80,VAR) // marked action
 #define _scope_warn(VAR) _scope_debug_level( 90,VAR) // some problem
-#define _scope_erro(VAR) _scope_debug_level(100,VAR) // error - report
+#define _scope_erro(VAR) _scope_debug_level( 100,VAR) // error - report
 
+/***
+@brief do not use this namespace directly, it is implementation detail.
+*/
+namespace nDetail { 
+
+/***
+@brief a Debug scope-guard, to log a debug message when current scope is left. Do NOT use this directly,
+only use it via the macros like _scope_dbg1 etc.
+*/
 class cDebugScopeGuard {
 	protected:
 		string mMsg;
 		int mLevel;
-		string mChan, mCodeStamp;
+		string mChan;
 	public:
 		cDebugScopeGuard();
 		~cDebugScopeGuard();
-		void Assign(const string &chan, const int level, const string &msg, const string &codeStamp);
+		void Assign(const string &chan, const int level, const string &msg);
 };
 
-const char* DbgShortenCodeFileName(const char *s);
+const char* DbgShortenCodeFileName(const char *s); ///< Returns a pointer to some part of the string that was given, skipping directory names, for log/debug
 
-std::string cSpaceFromEscape(const std::string &s);
+}; // namespace nDetail
 
 // ========== logger ==========
 
-/// @brief Class to write debug into. Used it by calling the debug macros _dbg1(...) _info(...) _erro(...) etc.
-/// @author rfree (maintainer)
-/// @TODO this is NOT THEAD SAFE YET XXX TODO
+/*** 
+@brief Class to write debug into. Used it by calling the debug macros _dbg1(...) _info(...) _erro(...) etc, NOT directly!
+@author rfree (maintainer) 
+*/
 class cLogger {
 	public:
 		cLogger();
 		~cLogger();
-		std::ostream & write_stream(int level);
-		std::ostream & write_stream(int level, const std::string & channel);
+		std::ostream & write_stream(int level); ///< starts a new message on given level (e.g. writes out the icon/tag) and returns stream to output to
+		std::ostream & write_stream(int level, const std::string & channel); ///< the same but with name of the debug channel
 
 		void setOutStreamFromGlobalOptions(); // set debug level, file etc - according to global Options
 		void setOutStreamFile(const std::string &fname); // switch to using this file
 		void setDebugLevel(int level); // change the debug level e.g. to mute debug from now
 
-		std::string icon(int level) const;
-		std::string endline() const;
+		std::string icon(int level) const; ///< returns "icon" for given debug level. It is text, might include color controll characters
+		std::string endline() const; ///< returns string to be written at end of message
 
 	protected:
 		unique_ptr<std::ofstream> mOutfile;
-		std::ostream * mStream; // pointing only! can point to our own mOutfile, or maye to global null stream
+		std::ostream * mStream; ///< pointing only! can point to our own mOutfile, or maye to global null stream
 
 		std::map< std::string , std::ofstream * > mChannels; // the ofstream objects are owned by this class
 
-		int mLevel; // current debug level
+		int mLevel; ///< current debug level
 
 		std::ostream & SelectOutput(int level, const std::string & channel);
 		void OpenNewChannel(const std::string & channel);
@@ -315,18 +325,6 @@ class cFilesystemUtils { // if we do not want to use boost in given project (or 
 		static char GetDirSeparator(); // eg '/' or '\'
 };
 
-// ====================================================================
-// operation on files 2
-
-/// @brief simple configuration
-/// @author rfree (maintainer)
-class cConfigManager {
-public:
-	bool Load(const string & fileName, map<eSubjectType, string> & configMap);
-	void Save(const string & fileName, const map<eSubjectType, string> & configMap);
-};
-
-extern cConfigManager configManager;
 
 /// @brief utils to e.g. edit a file from console
 /// @author rfree (maintainer)
@@ -400,52 +398,16 @@ map<TK,TV> operator+(const map<TK,TV> &a, const map<TK,TV> &b) {
 
 // Algorithms
 
+// ====================================================================
+// ====================================================================
+
+
 /**
-Find position in range.
-returns 0 if R is empty; else, number of R[i] before which the position is
+@brief Special type that on creation will be initialized to have value INIT given as template argument. 
+Might be usefull e.g. to express in the declaration of class what will be the default value of member variable
+See also http://www.boost.org/doc/libs/1_56_0/libs/utility/value_init.htm
+Probably not needed when using boost in your project.
 */
-template <class T>
-int RangesFindPosition(const vector<T> &R, const T &pos) {
-	int left=0;
-	int right=R.size()-1;
-
-	while (left<=right) {
-		int middle=(left+right)/2;
-
-		const auto &x = R.at(middle);
-
-		if(pos>R.at(right)) { // compare objects
-			return right;
-		}
-		else if(pos==x) { // compare objects
-			return middle;
-		}
-		else if(pos<=R.at(left)) { // compare objects
-			return left;
-		}
-		else if( pos>x) { // compare objects
-			if (pos < R.at(middle+1)) { // compare objects
-				return middle;
-		}
-			else left=middle+1;
-		}
-		else if(pos<x) { // compare objects
-			if(pos > R.at(middle-1)) { // compare object
-				return middle-1;
-		}
-			else right=middle+1;
-		}
-
-	}	// end while
-	return 0; // empty, not found (?)
-}
-
-// ====================================================================
-// ====================================================================
-
-
-// value_init for given value
-
 template <class T, T INIT>
 class value_init {
 	private:
@@ -461,23 +423,21 @@ class value_init {
 template <class T, T INIT>
 value_init<T, INIT>::value_init() :	data(INIT) { }
 
-string FindMapValue(const map<string, string> & map, const string value);
-
 }; // namespace nUtils
 
 }; // namespace nOT
 
 
 // global namespace
-extern nOT::nUtils::cLogger gCurrentLogger;
+extern nOT::nUtils::cLogger gCurrentLogger; ///< The current main logger. Usually do not use it directly, instead use macros like _dbg1 etc
 
+std::string GetObjectName(); ///< Method to return name of current object; To use in debug; Can be shadowed in your classes. (Might be not used currently)
 
-std::string GetObjectName();
+const extern int _dbg_ignore; ///< the global _dbg_ignore, but local code (blocks, classes etc) you could shadow it in your code blocks, 
+// to override debug compile-time setting for given block/class, e.g. to disable debug in one of your methods or increase it there.
+// Or to make it runtime by providing a class normal member and editing it in runtime
 
-const extern int _dbg_ignore; // the global _dbg_ignore, but local code (blocks, classes etc) should shadow it to override debug compile-time setting for given block/class
-// or to make it runtime by providing a class normal member and editing it in runtime
-
-#define OT_CODE_STAMP ( nOT::nUtils::ToStr("[") + nOT::nUtils::DbgShortenCodeFileName(__FILE__) + nOT::nUtils::ToStr("+") + nOT::nUtils::ToStr(__LINE__) + nOT::nUtils::ToStr(" ") + (GetObjectName()) + nOT::nUtils::ToStr("::") + nOT::nUtils::ToStr(__FUNCTION__) + nOT::nUtils::ToStr("]"))
+#define OT_CODE_STAMP ( nOT::nUtils::ToStr("[") + nOT::nUtils::nDetail::DbgShortenCodeFileName(__FILE__) + nOT::nUtils::ToStr("+") + nOT::nUtils::ToStr(__LINE__) + nOT::nUtils::ToStr(" ") + (GetObjectName()) + nOT::nUtils::ToStr("::") + nOT::nUtils::ToStr(__FUNCTION__) + nOT::nUtils::ToStr("]"))
 
 
 
