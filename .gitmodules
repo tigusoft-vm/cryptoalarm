@@ -3,4 +3,4 @@
 	url = https://github.com/monetas/gtest.git
 [submodule "soundsimple/PyMailSender"]
 	path = soundsimple/PyMailSender
-	url = git@github.com:Avvys/PyMailSender.git
+	url = https://github.com/Avvys/PyMailSender.git 
