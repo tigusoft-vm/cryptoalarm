@@ -62,7 +62,7 @@ private:
 		samplesFromCBuff.reserve(1000000);
 		time_t tt;
 		tt = std::chrono::system_clock::to_time_t(mRawBuffer.at(0).getStartTime());
-		_dbg1("time " << ctime(&tt));
+//		_dbg1("time " << ctime(&tt));
 		for (auto sample : mRawBuffer) {
 			auto chunk = sample.getSamplesVec();
 			for (auto element : chunk)
@@ -94,13 +94,12 @@ private:
 
 		diffToAlarm = std::chrono::steady_clock::now() - mAlarmLastTime;
 		if (diffToAlarm < std::chrono::seconds(EVENT_TIME)) {
-			_note("event");
 			isEvent = true;
 			auto vecOfSamples = mergeCBuff();
 
 			// saving last 20s
 			if (!savedMinusFile) {
-				_dbg2("saving 20s file");
+//				_dbg2("saving 20s file");
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime(), message);
 				savedMinusFile = true;
 				mRawBuffer.clear();
@@ -108,7 +107,7 @@ private:
 
 			// saving 3 files (1s)
 			else if (mSavedFiles < 3 && mRawBuffer.size() >= FIRST_FILES_TIME * 10) {
-				_dbg2("saving 1s file");
+//				_dbg2("saving 1s file");
 				++mSavedFiles;
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime(), message);
 				mRawBuffer.clear();
@@ -116,7 +115,7 @@ private:
 
 			// other files (10s)
 			else if (mSavedFiles >= 3 && mRawBuffer.size() >= NEXT_FILES_TIME * 10) {
-				_dbg2("saving 10s file");
+//				_dbg2("saving 10s file");
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime(), message);
 				mRawBuffer.clear();
 			}
@@ -135,8 +134,6 @@ private:
 
 	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename, std::string mess) {
 		assert(Samples != nullptr && SamplesCount > 0);
-		_dbg3("Start save to file");
-		_dbg3("size of samples: " << sizeof(Samples));
 
 		// 2014-12-01.15:36:23.wav -> 2014-12-04_11-39-52.wav
 		filename.replace(filename.find("."), 1, "_");
@@ -147,8 +144,8 @@ private:
 		sf::SoundBuffer buff;
 		buff.LoadFromSamples(Samples, SamplesCount, MONO, SampleRate);
 		assert(buff.GetDuration() != 0);
-		_dbg2("size of samples(get samples): " << sizeof(buff.GetSamples()));
-		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
+//		_dbg2("size of samples(get samples): " << sizeof(buff.GetSamples()));
+//		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
 		if (!buff.SaveToFile(recDirName + filename)) _erro(filename << " not saved :( ");
 		else {
 			assert(this->message != "");
