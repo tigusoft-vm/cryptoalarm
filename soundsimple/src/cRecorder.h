@@ -10,6 +10,8 @@
 #include "libs.h"
 #include "cSound.h"
 #include "cSoundFrame.h"
+#include "cSend.h"
+
 #include <boost/circular_buffer.hpp>
 
 #define CBUFF_SIZE 200
@@ -42,6 +44,8 @@ private:
 	bool savedMinusFile = false;
 	bool learnMode = false;
 	unsigned int mSavedFiles = 0;
+	std::string message = "";
+
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
 		return true;
@@ -85,6 +89,7 @@ private:
 			mAlarmLastTime = std::chrono::steady_clock::now();
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
+			this->message = sound->getMessage();
 		}
 
 		diffToAlarm = std::chrono::steady_clock::now() - mAlarmLastTime;
@@ -96,7 +101,7 @@ private:
 			// saving last 20s
 			if (!savedMinusFile) {
 				_dbg2("saving 20s file");
-				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
+				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime(), message);
 				savedMinusFile = true;
 				mRawBuffer.clear();
 			}
@@ -105,14 +110,14 @@ private:
 			else if (mSavedFiles < 3 && mRawBuffer.size() >= FIRST_FILES_TIME * 10) {
 				_dbg2("saving 1s file");
 				++mSavedFiles;
-				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
+				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime(), message);
 				mRawBuffer.clear();
 			}
 
 			// other files (10s)
 			else if (mSavedFiles >= 3 && mRawBuffer.size() >= NEXT_FILES_TIME * 10) {
 				_dbg2("saving 10s file");
-				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime());
+				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime(), message);
 				mRawBuffer.clear();
 			}
 
@@ -122,12 +127,13 @@ private:
 			isEvent = false;
 			savedMinusFile = false;
 			mSavedFiles = 0;
+			this->message = "";
 		}
 		// return true to continue the capture, or false to stop it
 		return true;
 	}
 
-	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename) {
+	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename, std::string mess) {
 		assert(Samples != nullptr && SamplesCount > 0);
 		_dbg3("Start save to file");
 		_dbg3("size of samples: " << sizeof(Samples));
@@ -144,8 +150,11 @@ private:
 		_dbg2("size of samples(get samples): " << sizeof(buff.GetSamples()));
 		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
 		if (!buff.SaveToFile(recDirName + filename)) _erro(filename << " not saved :( ");
-		else
+		else {
+			assert(this->message != "");
 			_note("File saved " << recDirName+filename);
+			cSend::sendMailNotificationMessage(mess, filename);
+		}
 	}
 
 	virtual void OnStop() {

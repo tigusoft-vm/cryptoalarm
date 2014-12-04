@@ -346,6 +346,17 @@ void cSound::wait_for_key() {
 	return;
 }
 
+std::string cSound::getMessage() {
+	string mess = "";
+	if(wasAlarm) {
+		mess = "Confirmation: " + to_string(this->confirmation) + ", reason: " +
+				this->reason;
+
+	}
+
+	return mess;
+}
+
 int cSound::autodetect(size_t fftw_size, const samples& freq, const samples& mag, unsigned int SampleRate) {
 	double threshold = 0.5; // magnitude threshold
 	//Detect Alarm

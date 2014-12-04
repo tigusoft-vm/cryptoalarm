@@ -15,13 +15,15 @@ class cSend {
 public:
 	cSend();
 	virtual ~cSend();
-
+	static const std::string sendScript;
 	static void alarmHandler();
 	static void sendXMPPNotificationMessage(std::string mess);
 	static void sendXMPPNotificationMessageInThread(std::string mess);
 	static void sendSum(std::string filename);
 	static void send(cSound::sendingMethod method, const std::string &message);
-    static void sendMailNotificationMessage(std::string mess);
+    static void sendMailNotificationMessage(std::string mess, std::string rec);
+    static void execute(std::string cmd);
+
 };
 
 #endif /* CSEND_H_ */

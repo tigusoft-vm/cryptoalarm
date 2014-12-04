@@ -42,6 +42,8 @@ class cSound {
 		double avg;
 		double max;
 	};
+	std::string getMessage();
+
 
 private:
 	static std::mutex mtx;
