@@ -1,5 +1,3 @@
-deps/gtest
-soundsimple/PyMailSender
 *.wav
 log.txt
 sended.txt
