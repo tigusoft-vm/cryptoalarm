@@ -132,7 +132,7 @@ private:
 		return true;
 	}
 
-	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename, std::string mess) {
+	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename, std::string mess) { _scope_mark("");
 		assert(Samples != nullptr && SamplesCount > 0);
 
 		// 2014-12-01.15:36:23.wav -> 2014-12-04_11-39-52.wav
@@ -150,6 +150,7 @@ private:
 		else {
 			assert(this->message != "");
 			_note("File saved " << recDirName+filename);
+			_note_c("send_log", "File saved " << recDirName+filename);
 			cSend::sendMailNotificationMessage(mess, filename);
 		}
 	}

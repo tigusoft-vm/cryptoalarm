@@ -71,6 +71,8 @@ void cSend::sendSum(std::string filename) {
 }
 
 void cSend::sendMailNotificationMessage(std::string mess, std::string rec) {
+	_dbg1_c("send_log", "mess" << mess);
+	_dbg2_c("send_log", "rec" << rec);
 	const string q = " \"  ";
 	const string cmd = sendScript + " mail " + q + mess +  q + rec;
 	_dbg2(cmd);
@@ -85,14 +87,15 @@ void cSend::sendMailHandleErrors(std::string toSend, int n) {
 	// log toSend
 	if(err == 0) {
 		// all ok, log this
+		_dbg1_c("send_log", "OK");
 	}
 	else {
 		if(!n) {
-			_erro("Problem with sending, I try send this once again");
+			_erro_c("send_log", "Problem with sending, I try send this once again");
 			sendMailHandleErrors(toSend, ++n);
 		}
 		else {
-			_erro("Can't send e-mail, I send notification via XMPP");
+			_erro_c("send_log", "Can't send e-mail, I send notification via XMPP");
 			sendXMPPNotificationMessageInThread(toSend);
 		}
 	}

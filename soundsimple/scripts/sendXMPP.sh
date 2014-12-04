@@ -2,7 +2,7 @@
 
 
 # usage ./send <message> 
-
+set -x
 
 source $HOME/.alarm_config/XMPP_accounts.conf
 
