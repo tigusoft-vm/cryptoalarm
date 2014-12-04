@@ -27,7 +27,7 @@ class cAlarm {
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 public:
 	void setLearnMode(bool learnMode = false)
-	{
+			{
 		this->learnMode = learnMode;
 	}
 
@@ -35,8 +35,8 @@ private:
 	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<
 			cSoundFrame>(CBUFF_SIZE);
 
-    std::chrono::steady_clock::time_point mAlarmLastTime;
-    std::chrono::steady_clock::duration diffToAlarm;
+	std::chrono::steady_clock::time_point mAlarmLastTime;
+	std::chrono::steady_clock::duration diffToAlarm;
 
 	bool isEvent = false;
 	bool savedMinusFile = false;
@@ -57,7 +57,7 @@ private:
 		std::vector<sf::Int16> samplesFromCBuff;
 		samplesFromCBuff.reserve(1000000);
 		time_t tt;
-        tt = std::chrono::system_clock::to_time_t(mRawBuffer.at(0).getStartTime());
+		tt = std::chrono::system_clock::to_time_t(mRawBuffer.at(0).getStartTime());
 		_dbg1("time " << ctime(&tt));
 		for (auto sample : mRawBuffer) {
 			auto chunk = sample.getSamplesVec();
@@ -82,12 +82,12 @@ private:
 		if (learnMode) sound->setSimulationMode();
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 		if (wasAlarm) {
-            mAlarmLastTime = std::chrono::steady_clock::now();
+			mAlarmLastTime = std::chrono::steady_clock::now();
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
 		}
 
-        diffToAlarm = std::chrono::steady_clock::now() - mAlarmLastTime;
+		diffToAlarm = std::chrono::steady_clock::now() - mAlarmLastTime;
 		if (diffToAlarm < std::chrono::seconds(EVENT_TIME)) {
 			_note("event");
 			isEvent = true;
@@ -131,7 +131,13 @@ private:
 		assert(Samples != nullptr && SamplesCount > 0);
 		_dbg3("Start save to file");
 		_dbg3("size of samples: " << sizeof(Samples));
+
+		// 2014-12-01.15:36:23.wav -> 2014-12-04_11-39-52.wav
+		filename.replace(filename.find("."), 1, "_");
+		filename.replace(filename.find(":"), 1, "-");
+		filename.replace(filename.find(":"), 1, "-");
 		filename += ".wav";
+
 		sf::SoundBuffer buff;
 		buff.LoadFromSamples(Samples, SamplesCount, MONO, SampleRate);
 		assert(buff.GetDuration() != 0);
