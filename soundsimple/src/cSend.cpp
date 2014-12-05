@@ -58,8 +58,7 @@ void cSend::send(cSound::sendingMethod method, const std::string &message) {
 void cSend::sendXMPPNotificationMessage(std::string mess) {
 	const string q = " \" ";
 	_info("cmd");
-	//const string cmd = sendScript + " xmpp " + q + mess + q;
-	const string cmd = "./send-xmpp.sh " + q + mess + q;
+	const string cmd = sendScript + " xmpp " + q + mess + q;
 
 	if(!simulationMode) std::system(cmd.c_str());
 }
