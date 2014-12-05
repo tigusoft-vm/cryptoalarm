@@ -5,8 +5,12 @@
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
 	cRecorder rec;
+
+	if(argc == 2) rec.setLearningMode();
+
+
 	rec.startRecording();
 
 	return 0;

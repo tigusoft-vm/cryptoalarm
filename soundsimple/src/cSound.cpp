@@ -9,6 +9,8 @@
 
 #include "cSend.h"
 
+#define SND_LOG "detecting_sound.log"
+
 using namespace std;
 
 std::stack<std::pair<std::string, cSound::sendingMethod>> cSound::alarmsToSend;
@@ -24,13 +26,12 @@ cSound::cSound(bool isEvent) :
 }
 
 void cSound::createThreadForSendScript() {
-	_dbg1(n);
+	_dbg1_c(SND_LOG, n);
 	xmppScript = thread(&cSend::alarmHandler);
 	xmppScript.detach();
 }
 
 bool cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate) {
-	//_info(*Samples << " , count " << SamplesCount << ", " << SampleRate);
 	double *in = new double[SamplesCount];
 	convArrToDouble(in, Samples, SamplesCount); // Convert input array to double
 
@@ -92,7 +93,7 @@ bool cSound::detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size)
 		this->reason += "high noise level: " + to_string(noiseLvl) + "; ";
 	}
 
-	if(justNoise) this->method = sendingMethod::MAIL;
+	if (justNoise) this->method = sendingMethod::MAIL;
 
 	return isAlarm;
 }
@@ -100,8 +101,6 @@ bool cSound::detectAlarm(samples mag, unsigned int SampleRate, size_t fftw_size)
 bool cSound::hasMagHigh(samples mag) {
 	bool makeAlarm = false;
 	mag.back() = 0;
-	//_note("mag.size() " << mag.size());
-	//_note("minAlarm " << minAlarm);
 	for (int i = 0; i < 40; ++i)
 		mag.pop_back();
 	for (unsigned int i = 10; i < mag.size(); ++i) {
@@ -144,7 +143,8 @@ void cSound::normalize(samples &mag, double maxMag, size_t fftw_size) {
 		//if (mag.at(i) >= threshold) _dbg1(mag.at(i) << "\t" << freq.at(i));
 	}
 	energy_ = energy;
-	//_dbg2("energy: " << energy);
+
+	_dbg2_c(SND_LOG, "energy: " << energy);
 }
 
 std::vector<double> cSound::calculateFrequencies(unsigned int SampleRate, size_t fftw_size) {
@@ -165,31 +165,31 @@ int cSound::Interpret(const samples &mag, unsigned int SampleRate, size_t N) {
 	const double noiseEnergyNow = typicalEnergyNow * 0.3; // a treshold of sound in current sample
 
 	if (typicalEnergyNow > 0.01) {
-//		_info("Noise lvl " << noiseLvl);
+		_info_c(SND_LOG, "Noise lvl " << noiseLvl);
 		++noiseLvl;
 	}
 	if (typicalEnergyNow > 0.02) {
-//		_info("Noise lvl " << noiseLvl);
+		_info_c(SND_LOG, "Noise lvl " << noiseLvl);
 		++noiseLvl;
 	}
 	if (typicalEnergyNow > 0.05) {
-//		_info("Noise lvl " << noiseLvl);
+		_info_c(SND_LOG, "Noise lvl " << noiseLvl);
 		++noiseLvl;
 	}
 	if (typicalEnergyNow > 0.08) {
-//		_info("Noise lvl " << noiseLvl);
+		_info_c(SND_LOG, "Noise lvl " << noiseLvl);
 		++noiseLvl;
 	}
 	if (typicalEnergyNow > 0.10) {
-//		_info("Noise lvl " << noiseLvl);
+		_info("Noise lvl " << noiseLvl);
 		++noiseLvl;
 	}
 	if (typicalEnergyNow > 0.25) {
-//		_info("Noise lvl " << noiseLvl);
+		_info_c(SND_LOG, "Noise lvl " << noiseLvl);
 		++noiseLvl;
 	}
 	if (noiseLvl >= 4) {
-//		_info("noise");_info("Noise! "<<noiseLvl);
+		_info_c(SND_LOG, "noise");_info_c(SND_LOG, "Noise! "<<noiseLvl);
 	}
 
 	//_dbg1("noiseLvl=" << noiseLvl << " typicalEnergyNow "<<typicalEnergyNow);
@@ -257,9 +257,7 @@ std::shared_ptr<cSound::alarmData> cSound::getSection(const samples &mag, int fr
 	}
 
 	range->avg = range->sum / (to - from);
-	//_note("max: " << range->max << ", avg: " << range->avg << ", sum: " << range->sum);
 	return range;
-
 }
 
 const std::string cSound::currentDateTime() {
@@ -286,7 +284,6 @@ void cSound::alarm() {
 
 		mtx.lock();
 		{
-
 			alarmsToSend.push(sending);
 		}
 		mtx.unlock();
@@ -300,13 +297,8 @@ void cSound::alarm() {
 }
 
 bool cSound::IsInRange(double var, double from, double to) {
-	if (from > to) return false;
-	//if (var >= from && var <= to) return true; // TODO
-
-	// if (var >= to) return true; // is too loud? but still
-
+	if (from > to) return false; // error
 	if (var >= from) return true; // is loud
-
 	return false;
 }
 
@@ -348,12 +340,7 @@ void cSound::wait_for_key() {
 
 std::string cSound::getMessage() {
 	string mess = "";
-	if(wasAlarm) {
-		mess = "Confirmation: " + to_string(this->confirmation) + ", reason: " +
-				this->reason;
-
-	}
-
+	if (wasAlarm) mess = "Confirmation: " + to_string(this->confirmation) + ", reason: " + this->reason;
 	return mess;
 }
 

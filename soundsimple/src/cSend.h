@@ -16,6 +16,7 @@ public:
 	cSend();
 	virtual ~cSend();
 	static const std::string sendScript;
+	static bool simulationMode;
 	static void alarmHandler();
 	static void sendXMPPNotificationMessage(std::string mess);
 	static void sendXMPPNotificationMessageInThread(std::string mess);
@@ -24,7 +25,6 @@ public:
     static void sendMailNotificationMessage(std::string mess, std::string rec);
     static void sendMailHandleErrors(std::string toSend, int n);
     static void execute(std::string cmd);
-
 };
 
 #endif /* CSEND_H_ */

@@ -6,10 +6,12 @@
  */
 
 #include "cSend.h"
+#define SEND_LOG "send_log"
 
 using namespace std;
 
 const string cSend::sendScript = "../scripts/send.sh ";
+bool cSend::simulationMode = false;
 
 cSend::cSend()
 {
@@ -30,9 +32,9 @@ void cSend::alarmHandler() {
 			_fact("sending");
 
 			cSound::mtx.lock();
-				const string mess = cSound::alarmsToSend.top().first;
-				const auto method = cSound::alarmsToSend.top().second;
-				cSound::alarmsToSend.pop();
+			const string mess = cSound::alarmsToSend.top().first;
+			const auto method = cSound::alarmsToSend.top().second;
+			cSound::alarmsToSend.pop();
 			cSound::mtx.unlock();
 			send(method, mess);
 		}
@@ -40,14 +42,18 @@ void cSend::alarmHandler() {
 }
 
 void cSend::send(cSound::sendingMethod method, const std::string &message) {
-	switch(method) {
+	switch (method) {
 	case cSound::sendingMethod::XMPP:
+		_info("sending notification via XMPP");
+		_info_c(SEND_LOG, "sending notification via XMPP");
 		sendXMPPNotificationMessage(message);
 		break;
-
+	case cSound::sendingMethod::MAIL:
+		_note("Just noise. After saving recording mail will be send");
+		_note_c(SEND_LOG, "Just noise. After saving recording mail will be send");
+		break;
 	}
 }
-
 
 void cSend::sendXMPPNotificationMessage(std::string mess) {
 	const string q = " \" ";
@@ -55,7 +61,7 @@ void cSend::sendXMPPNotificationMessage(std::string mess) {
 	//const string cmd = sendScript + " xmpp " + q + mess + q;
 	const string cmd = "./send-xmpp.sh " + q + mess + q;
 
-	std::system(cmd.c_str());
+	if(!simulationMode) std::system(cmd.c_str());
 }
 
 void cSend::sendXMPPNotificationMessageInThread(std::string mess) {
@@ -73,37 +79,37 @@ void cSend::sendSum(std::string filename) {
 }
 
 void cSend::sendMailNotificationMessage(std::string mess, std::string rec) {
-	_dbg1_c("send_log", "mess" << mess);
-	_dbg2_c("send_log", "rec" << rec);
+	_dbg1_c(SEND_LOG, "mess: " << mess << ", recording: " << rec);
 	const string q = " \"  ";
-	const string cmd = sendScript + " mail " + q + mess +  q + rec;
+	const string cmd = sendScript + " mail " + q + mess + q + rec;
 	_dbg2(cmd);
 
+	if(simulationMode) return;
 	thread systh(&cSend::sendMailHandleErrors, cmd.c_str(), 0);
 	systh.detach();
-
 }
 
 void cSend::sendMailHandleErrors(std::string toSend, int n) {
 	auto err = std::system(toSend.c_str());
 	// log toSend
-	if(err == 0) {
+	if (err == 0) {
 		// all ok, log this
-		_dbg1_c("send_log", "OK");
+		_dbg1_c(SEND_LOG, "All ok");
 	}
 	else {
-		if(!n) {
-			_erro_c("send_log", "Problem with sending, I try send this once again");
+		if (!n) {
+			_erro_c(SEND_LOG, "Problem with sending, I try send this once again");
 			sendMailHandleErrors(toSend, ++n);
 		}
 		else {
-			_erro_c("send_log", "Can't send e-mail, I send notification via XMPP");
+			_erro_c(SEND_LOG, "Can't send e-mail, I send notification via XMPP");
 			sendXMPPNotificationMessageInThread(toSend);
 		}
 	}
 }
 
-void cSend::execute(std::string cmd)  {
+void cSend::execute(std::string cmd) {
+	if(simulationMode) return;
 	thread systh(std::system, cmd.c_str());
 	systh.detach();
 }

@@ -20,6 +20,7 @@
 #define EVENT_TIME 10
 #define FIRST_FILES_TIME 1
 #define NEXT_FILES_TIME 10
+#define SAVING_LOG "saving_buff.log"
 
 const std::string recDirName = "recordings/";
 
@@ -28,9 +29,9 @@ class cAlarm {
 
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 public:
-	void setLearnMode(bool learnMode = false)
+	void setSimulationMode(bool learnMode = false)
 			{
-		this->learnMode = learnMode;
+		this->simulationMode = learnMode;
 	}
 
 private:
@@ -42,7 +43,7 @@ private:
 
 	bool isEvent = false;
 	bool savedMinusFile = false;
-	bool learnMode = false;
+	bool simulationMode = false;
 	unsigned int mSavedFiles = 0;
 	std::string message = "";
 
@@ -62,7 +63,6 @@ private:
 		samplesFromCBuff.reserve(1000000);
 		time_t tt;
 		tt = std::chrono::system_clock::to_time_t(mRawBuffer.at(0).getStartTime());
-//		_dbg1("time " << ctime(&tt));
 		for (auto sample : mRawBuffer) {
 			auto chunk = sample.getSamplesVec();
 			for (auto element : chunk)
@@ -83,7 +83,7 @@ private:
 		createAndSaveFrameToCBuff(Samples, SamplesCount);
 
 		auto sound = std::make_shared<cSound>(isEvent);
-		if (learnMode) sound->setSimulationMode();
+		if (simulationMode) sound->setSimulationMode();
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 		if (wasAlarm) {
 			mAlarmLastTime = std::chrono::steady_clock::now();
@@ -100,7 +100,7 @@ private:
 
 			// saving last 20s
 			if (!savedMinusFile) {
-//				_dbg2("saving 20s file");
+				_dbg2_c(SAVING_LOG, "saving 20s file");
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime(), message);
 				savedMinusFile = true;
 				mRawBuffer.clear();
@@ -108,7 +108,7 @@ private:
 
 			// saving 3 files (1s)
 			else if (mSavedFiles < 3 && mRawBuffer.size() >= FIRST_FILES_TIME * 10) {
-//				_dbg2("saving 1s file");
+				_dbg2_c(SAVING_LOG, "saving 1s file");
 				++mSavedFiles;
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime(), message);
 				mRawBuffer.clear();
@@ -116,7 +116,7 @@ private:
 
 			// other files (10s)
 			else if (mSavedFiles >= 3 && mRawBuffer.size() >= NEXT_FILES_TIME * 10) {
-//				_dbg2("saving 10s file");
+				_dbg2_c(SAVING_LOG, "saving 10s file");
 				saveBuffToFile(vecOfSamples.data(), vecOfSamples.size(), SampleRate, sound->currentDateTime(), message);
 				mRawBuffer.clear();
 			}
@@ -132,7 +132,8 @@ private:
 		return true;
 	}
 
-	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename, std::string mess) { _scope_mark("");
+	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename, std::string mess) {
+		_scope_info("");
 		assert(Samples != nullptr && SamplesCount > 0);
 
 		// 2014-12-01.15:36:23.wav -> 2014-12-04_11-39-52.wav
@@ -144,13 +145,16 @@ private:
 		sf::SoundBuffer buff;
 		buff.LoadFromSamples(Samples, SamplesCount, MONO, SampleRate);
 		assert(buff.GetDuration() != 0);
-//		_dbg2("size of samples(get samples): " << sizeof(buff.GetSamples()));
-//		_info("samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
+
+		_dbg2_c(SAVING_LOG, "size of samples(get samples): " << sizeof(buff.GetSamples()));
+		_info_c(SAVING_LOG, "samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
+
 		if (!buff.SaveToFile(recDirName + filename)) _erro(filename << " not saved :( ");
 		else {
 			assert(this->message != "");
 			_note("File saved " << recDirName+filename);
-			_note_c("send_log", "File saved " << recDirName+filename);
+			_note_c(SAVING_LOG, "File saved " << recDirName+filename);
+			if(simulationMode) return;
 			cSend::sendMailNotificationMessage(mess, filename);
 		}
 	}

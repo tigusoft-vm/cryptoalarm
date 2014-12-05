@@ -14,6 +14,7 @@ cRecorder::cRecorder() :
 {
 	assert(sf::SoundBufferRecorder::CanCapture()); // audio capture must be supported
 	if (!boost::filesystem::exists(recDirName)) boost::filesystem::create_directory(recDirName);
+	cSend::simulationMode = false;
 }
 
 cRecorder::~cRecorder()
@@ -43,5 +44,7 @@ void cRecorder::waitForExitKey() {
 }
 
 void cRecorder::setLearningMode() {
-	Recorder.setLearnMode(true);
+	_warn("SIMULATION MODE, ONLY FOR TESTING");
+	Recorder.setSimulationMode(true);
+	cSend::simulationMode = true;
 }
