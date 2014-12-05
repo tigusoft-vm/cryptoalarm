@@ -29,8 +29,8 @@ void cSend::alarmHandler() {
 		//_note(cSound::alarmsToSend.size());
 		if (cSound::alarmsToSend.empty()) sleep(1); // nothing to send
 		else {
-			_fact("sending");
-
+			_scope_fact("sending xmpp message from queue");
+			_fact_c(SEND_LOG, "sending xmpp message from queue");
 			cSound::mtx.lock();
 			const string mess = cSound::alarmsToSend.top().first;
 			const auto method = cSound::alarmsToSend.top().second;
@@ -56,10 +56,12 @@ void cSend::send(cSound::sendingMethod method, const std::string &message) {
 }
 
 void cSend::sendXMPPNotificationMessage(std::string mess) {
+	_note("sending XMPP message");
+	_note_c(SEND_LOG, "sending XMPP message");
 	const string q = " \" ";
-	_info("cmd");
 	const string cmd = sendScript + " xmpp " + q + mess + q;
-
+	_info(cmd);
+	_info_c(SEND_LOG, cmd);
 	if(!simulationMode) std::system(cmd.c_str());
 }
 
@@ -89,6 +91,7 @@ void cSend::sendMailNotificationMessage(std::string mess, std::string rec) {
 }
 
 void cSend::sendMailHandleErrors(std::string toSend, int n) {
+	_scope_mark("sending email" << toSend);
 	auto err = std::system(toSend.c_str());
 	// log toSend
 	if (err == 0) {

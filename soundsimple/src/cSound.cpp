@@ -181,7 +181,7 @@ int cSound::Interpret(const samples &mag, unsigned int SampleRate, size_t N) {
 		++noiseLvl;
 	}
 	if (typicalEnergyNow > 0.10) {
-		_info("Noise lvl " << noiseLvl);
+		_info_c(SND_LOG, "Noise lvl " << noiseLvl);
 		++noiseLvl;
 	}
 	if (typicalEnergyNow > 0.25) {
@@ -273,7 +273,7 @@ const std::string cSound::currentDateTime() {
 }
 
 void cSound::alarm() {
-	_mark("alarm (confirmations): " << this->confirmation);
+	_mark_c(SND_LOG, "alarm (confirmations): " << this->confirmation);
 	this->wasAlarm = true;
 	ostringstream message;
 	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation;

@@ -90,7 +90,7 @@ private:
 			assert(!mRawBuffer.empty());
 			auto vecOfSamples = mergeCBuff();
 			this->message = sound->getMessage();
-			_info(message);
+			_info_c(SAVING_LOG, "message: " << message);
 		}
 
 		diffToAlarm = std::chrono::steady_clock::now() - mAlarmLastTime;
@@ -133,7 +133,7 @@ private:
 	}
 
 	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename, std::string mess) {
-		_scope_info("");
+		//_scope_info("");
 		assert(Samples != nullptr && SamplesCount > 0);
 
 		// 2014-12-01.15:36:23.wav -> 2014-12-04_11-39-52.wav
@@ -154,7 +154,6 @@ private:
 			assert(this->message != "");
 			_note("File saved " << recDirName+filename);
 			_note_c(SAVING_LOG, "File saved " << recDirName+filename);
-			if(simulationMode) return;
 			cSend::sendMailNotificationMessage(mess, filename);
 		}
 	}
