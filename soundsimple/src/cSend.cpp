@@ -86,7 +86,7 @@ void cSend::sendMailNotificationMessage(std::string mess, std::string rec) {
 	_dbg2(cmd);
 
 	if(simulationMode) return;
-	thread systh(&cSend::sendMailHandleErrors, cmd.c_str(), 0);
+	thread systh(&cSend::sendMailHandleErrors, cmd, 0);
 	systh.detach();
 }
 
