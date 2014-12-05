@@ -20,7 +20,7 @@
 #define EVENT_TIME 10
 #define FIRST_FILES_TIME 1
 #define NEXT_FILES_TIME 10
-#define SAVING_LOG "saving_buff.log"
+#define SAVING_LOG "saving_buff"
 
 const std::string recDirName = "recordings/";
 

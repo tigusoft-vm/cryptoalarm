@@ -9,7 +9,7 @@
 
 #include "cSend.h"
 
-#define SND_LOG "detecting_sound.log"
+#define SND_LOG "detecting_sound"
 
 using namespace std;
 
