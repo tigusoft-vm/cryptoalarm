@@ -14,7 +14,7 @@ source $HOME/motion-alert/soundsimple/scripts/send-mail.sh
 echo $mess
 
 if [[ $via == "xmpp"  ]]; then 
-    sendXMPPInLoop $mess
+    sendXMPPInLoop "$mess"
 elif [[ $via == "mail" ]]; then
     sign $file 
     send "$mess" $file

@@ -24,7 +24,7 @@ cSend::~cSend()
 
 void cSend::alarmHandler() {
 	while (true) {
-		_note(cSound::alarmsToSend.size());
+		//_note(cSound::alarmsToSend.size());
 		if (cSound::alarmsToSend.empty()) sleep(1); // nothing to send
 		else {
 			_fact("sending");
@@ -52,7 +52,9 @@ void cSend::send(cSound::sendingMethod method, const std::string &message) {
 void cSend::sendXMPPNotificationMessage(std::string mess) {
 	const string q = " \" ";
 	_info("cmd");
-	const string cmd = sendScript + " xmpp " + q + mess + q;
+	//const string cmd = sendScript + " xmpp " + q + mess + q;
+	const string cmd = "./send-xmpp.sh " + q + mess + q;
+
 	std::system(cmd.c_str());
 }
 
