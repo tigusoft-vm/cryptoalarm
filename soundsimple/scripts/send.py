@@ -8,8 +8,12 @@ import time
 # xmpp " 2014-12-08.12:40:24  ALARM DETECTED: 6 high confirmation level;  <!SIMULATION!> " 
 
 def sign(filename) :
-	command = "$HOME/chainsign/chainsign --client " + filename
-	print command
+	command1 = "echo \"SIGN-NEXTKEY\" >> $HOME/chainsign/fifo"
+	print command1
+	os.system(command1) 
+	command2 = "echo  \"" + filename + "\" >> $HOME/chainsign/fifo"
+	print command2
+	os.system(command2) 
 
 def getPackedFilename(filename) : 
 	raw = filename.split(".")
@@ -27,8 +31,11 @@ def waitForFile(packedFile) :
 		time.sleep(2) 
 
 def sendMail(message, filename) :
-	command = "$HOME/PyMailSender/sendmail.py ALARM " + " \"" + message + "\" " + filename 
+	command = "cd $HOME/PyMailSender ; ./sendmail.py ALARM " + " \"" + message + "\" " + filename 
 	print command 
+	command2 = "cp " + filename + " $HOME/stfp " 
+	print command2
+	os.system(command2)
 	os.system(command)
 
 def sendXMPP(message) : 
@@ -46,7 +53,7 @@ if sys.argv[1] == "mail" :
 
 	sign(filename) 
 	waitForFile(packedFile) 
-	sendMail(message, filename)
+	sendMail(message, packedFile)
 
 	getPackedFilename(sys.argv[3]) 
 elif sys.argv[1] == "xmpp" : 
