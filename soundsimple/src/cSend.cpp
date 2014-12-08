@@ -10,7 +10,7 @@
 
 using namespace std;
 
-const string cSend::sendScript = "../scripts/send.sh ";
+const string cSend::sendScript = "../scripts/send.py ";
 bool cSend::simulationMode = false;
 
 cSend::cSend()

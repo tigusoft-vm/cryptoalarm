@@ -11,7 +11,7 @@
 #include "cSound.h"
 #include "cSoundFrame.h"
 #include "cSend.h"
-
+#include "cFile.h"
 #include <boost/circular_buffer.hpp>
 
 #define CBUFF_SIZE 200
@@ -132,15 +132,12 @@ private:
 		return true;
 	}
 
-	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string filename, std::string mess) {
+	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string date, std::string mess) {
 		//_scope_info("");
 		assert(Samples != nullptr && SamplesCount > 0);
 
-		// 2014-12-01.15:36:23.wav -> 2014-12-04_11-39-52.wav
-		filename.replace(filename.find("."), 1, "_");
-		filename.replace(filename.find(":"), 1, "-");
-		filename.replace(filename.find(":"), 1, "-");
-		filename += ".wav";
+
+
 
 		sf::SoundBuffer buff;
 		buff.LoadFromSamples(Samples, SamplesCount, MONO, SampleRate);
@@ -148,12 +145,12 @@ private:
 
 		_dbg2_c(SAVING_LOG, "size of samples(get samples): " << sizeof(buff.GetSamples()));
 		_info_c(SAVING_LOG, "samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
-
-		if (!buff.SaveToFile(recDirName + filename)) _erro(filename << " not saved :( ");
+		std::string filename = cFile::getFilename(date);
+		if (!buff.SaveToFile(filename)) _erro(filename << " not saved :( ");
 		else {
 			assert(this->message != "");
-			_note("File saved " << recDirName+filename);
-			_note_c(SAVING_LOG, "File saved " << recDirName+filename);
+			_note("File saved " << filename);
+			_note_c(SAVING_LOG, "File saved " << filename);
 			cSend::sendMailNotificationMessage(mess, filename);
 		}
 	}
