@@ -6,11 +6,12 @@
  */
 
 #include "cSend.h"
+#include "cFile.h"
 #define SEND_LOG "send_log"
 
 using namespace std;
 
-const string cSend::sendScript = "../scripts/send.py ";
+const string cSend::sendScript = "motion-alert/soundsimple/scripts/send.py ";
 bool cSend::simulationMode = false;
 
 cSend::cSend()
@@ -59,7 +60,7 @@ void cSend::sendXMPPNotificationMessage(std::string mess) {
 	_note("sending XMPP message");
 	_note_c(SEND_LOG, "sending XMPP message");
 	const string q = " \" ";
-	const string cmd = sendScript + " xmpp " + q + mess + q;
+	const string cmd = cFile::getHomeDir() + sendScript + " xmpp " + q + mess + q;
 	_info(cmd);
 	_info_c(SEND_LOG, cmd);
 	if(!simulationMode) std::system(cmd.c_str());
@@ -82,7 +83,7 @@ void cSend::sendSum(std::string filename) {
 void cSend::sendMailNotificationMessage(std::string mess, std::string rec) {
 	_dbg1_c(SEND_LOG, "mess: " << mess << ", recording: " << rec);
 	const string q = " \"  ";
-	const string cmd = sendScript + " mail " + q + mess + q + rec;
+	const string cmd = cFile::getHomeDir() + sendScript + " mail " + q + mess + q + rec;
 	_dbg2(cmd);
 
 	if(simulationMode) return;
