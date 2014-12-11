@@ -64,6 +64,10 @@ private:
 	bool isEventNow;
 	int noiseLvl;
 	std::string reason;
+	bool learnMode;
+
+	samples mag;
+	samples freq;
 
 	void createThreadForSendScript();
 	void wait_for_key(); // used in plot function
@@ -80,6 +84,12 @@ private:
 
 	// plotResult();
 	int autodetect(size_t fftw_size, const samples &freq, const samples &mag, unsigned int SampleRate); // old way to detect alarm, not used at now
+
+public:
+	void setLearnMode(bool learnMode){
+		this->learnMode = learnMode;
+	}
+
 };
 
 #endif /* CSOUND_H_ */

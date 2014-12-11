@@ -16,6 +16,8 @@
 #include <atomic>
 #include <condition_variable>
 #include <stack>
+#include <stdexcept>
+
 
 #include <cassert>
 #include <cstring>

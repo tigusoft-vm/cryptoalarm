@@ -8,6 +8,7 @@
 #include "gnuplot_i.hpp"
 
 #include "cSend.h"
+#include "cSoundProperties.h"
 
 #define SND_LOG "detecting_sound"
 
@@ -19,7 +20,8 @@ mutex cSound::mtx;
 
 cSound::cSound(bool isEvent) :
 		simulation_(false), minAlarm(1.), energy_(0), confirmation(0),
-				wasAlarm(false), isEventNow(isEvent), noiseLvl(0), method(sendingMethod::XMPP)
+				wasAlarm(false), isEventNow(isEvent), noiseLvl(0), method(sendingMethod::XMPP),
+				learnMode(false)
 {
 	if (n == 0) createThreadForSendScript();
 	n++;
@@ -44,22 +46,24 @@ bool cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	fftw_execute(p);
 
 	// frequencies and magnitude vectors
-	auto freq = calculateFrequencies(SampleRate, fftw_size);
-	auto mag = calculateMagnitude(fftw_size, out);
-
-	// alarm
-	if (detectAlarm(mag, SampleRate, fftw_size)) alarm();
-
-	// plot results
-	if (simulation_) {
-		//dealWithData(freq, mag);
-		//plotResults(freq, mag);
-	}
+	this->freq = calculateFrequencies(SampleRate, fftw_size);
+	this->mag = calculateMagnitude(fftw_size, out);
 
 	// remove fftw data
 	fftw_destroy_plan(p);
 	fftw_free(in);
 	fftw_free(out);
+
+	if(learnMode) {
+		cSoundProperties prop(mag, freq);
+		return false;
+	}
+
+	// alarm
+	if (detectAlarm(mag, SampleRate, fftw_size)) alarm();
+
+	// plot results
+	if (simulation_) plotResults(freq, mag);
 
 	return wasAlarm;
 }

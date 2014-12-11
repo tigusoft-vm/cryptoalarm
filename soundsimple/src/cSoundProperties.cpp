@@ -12,13 +12,25 @@ using namespace std;
 cSoundProperties::cSoundProperties(samples mag, samples freq) :
 		mag_(mag), freq_(freq), intervals_(20)
 {
-	_dbg1("freq size = " << freq_.size() << ", mag size = " << mag_.size());
+	//_dbg1("freq size = " << freq_.size() << ", mag size = " << mag_.size());
 	size_ = std::min(mag_.size(), freq.size());
+	generateChatacteristicData(mag);
+
 }
 
 cSoundProperties::~cSoundProperties()
 {
 	// TODO Auto-generated destructor stub
+}
+
+void cSoundProperties::display() const {
+	_scope_info("");
+	assert(avgs_.size() == sums_.size());
+	assert(sums_.size() == maxs_.size());
+	for (int i = 0; i < avgs_.size(); ++i) {
+		cout << i << setw(20) << maxs_.at(i) << " " << avgs_.at(i) << " " << sums_.at(i) << endl;
+
+	}
 }
 
 void cSoundProperties::generateChatacteristicData(samples &mag) {
@@ -34,6 +46,7 @@ void cSoundProperties::generateChatacteristicData(samples &mag) {
 		auto fromIt = mag.begin() + i;
 		getDataFromChunk(fromIt, toIt);
 	}
+	display();
 }
 
 void cSoundProperties::getDataFromChunk(samples::iterator fromIt, samples::iterator toIt) {
@@ -52,3 +65,4 @@ void cSoundProperties::getDataFromChunk(samples::iterator fromIt, samples::itera
 	sums_.push_back(sum);
 	maxs_.push_back(maxv);
 }
+

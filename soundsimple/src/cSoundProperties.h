@@ -18,7 +18,7 @@ public:
 	virtual ~cSoundProperties();
 
 	void improve(const samples &mag, const samples &freq);
-
+	void display() const;
 
 	const int intervals_;
 

@@ -29,9 +29,14 @@ class cAlarm {
 
 class cAlarmSoundRecorder: public sf::SoundBufferRecorder {
 public:
-	void setSimulationMode(bool learnMode = false)
-			{
-		this->simulationMode = learnMode;
+	void setSimulationMode(bool simulationMode = false){
+		this->simulationMode = simulationMode;
+		_dbg3(simulationMode);
+	}
+
+	void setLearnMode(bool learnMode = false) {
+		this->learnMode = learnMode;
+		_dbg3(learnMode);
 	}
 
 private:
@@ -44,6 +49,7 @@ private:
 	bool isEvent = false;
 	bool savedMinusFile = false;
 	bool simulationMode = false;
+	bool learnMode = false;
 	unsigned int mSavedFiles = 0;
 	std::string message = "";
 
@@ -149,11 +155,12 @@ private:
 
 		auto sound = std::make_shared<cSound>(isEvent);
 		if (simulationMode) sound->setSimulationMode();
+		if (learnMode) sound->setLearnMode(true);
 
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 		if (wasAlarm) handleAlarm(sound);
 
-		handleEvent(sound);
+		if(!learnMode) handleEvent(sound);
 
 		// return true to continue the capture, or false to stop it
 		return true;
@@ -171,6 +178,7 @@ public:
 	virtual ~cRecorder();
 	void startRecording();
 	void setLearningMode();
+	void setSimulationMode();
 
 	const bool fromMicrophoneMode;
 
