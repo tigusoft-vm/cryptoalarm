@@ -155,7 +155,7 @@ private:
 
 		auto sound = std::make_shared<cSound>(isEvent);
 		if (simulationMode) sound->setSimulationMode();
-		if (learnMode) sound->setLearnMode(true);
+//		if (learnMode) sound->setLearnMode(true);
 
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
 		if (wasAlarm) handleAlarm(sound);

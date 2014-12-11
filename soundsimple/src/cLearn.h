@@ -9,6 +9,8 @@
 #define CLEARN_H_
 
 #include "libs.h"
+#include "cSound.h"
+#include "cSoundProperties.h"
 
 class cLearn {
 public:
@@ -20,6 +22,7 @@ public:
 private:
 	const std::string filename;
 	sf::SoundBuffer getBuffFromFile();
+	std::shared_ptr<cSound> prepareSound(sf::SoundBuffer &Buffer);
 
 };
 

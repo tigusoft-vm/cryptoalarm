@@ -29,7 +29,7 @@ private:
 	void getDataFromChunk(samples::iterator fromIt, samples::iterator toIt);
 	void generateChatacteristicData(samples &mag);
 
-
+	samples chunkOfMag(int from, int to);
 	samples avgs_;
 	samples sums_;
 	samples maxs_;

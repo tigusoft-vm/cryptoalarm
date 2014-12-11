@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 		("help,h", "print help messages")
 		("active-alarm,a", "starting alarm")
 		("simulation-mode,s", "start detecting alarm without notification")
-		("learn,l", po::value<string>()->required(), "learn new alarm from recording")
+		("learn,l", po::value<string>(), "learn new alarm from recording")
 		("learn-mode,m", "learn mode" )
 		;
 

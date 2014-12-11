@@ -14,8 +14,9 @@ cSoundProperties::cSoundProperties(samples mag, samples freq) :
 {
 	//_dbg1("freq size = " << freq_.size() << ", mag size = " << mag_.size());
 	size_ = std::min(mag_.size(), freq.size());
-	generateChatacteristicData(mag);
+	//generateChatacteristicData(mag);
 
+	auto vec = chunkOfMag(300, 2000);
 }
 
 cSoundProperties::~cSoundProperties()
@@ -46,7 +47,8 @@ void cSoundProperties::generateChatacteristicData(samples &mag) {
 		auto fromIt = mag.begin() + i;
 		getDataFromChunk(fromIt, toIt);
 	}
-	display();
+	//display();
+
 }
 
 void cSoundProperties::getDataFromChunk(samples::iterator fromIt, samples::iterator toIt) {
@@ -66,3 +68,17 @@ void cSoundProperties::getDataFromChunk(samples::iterator fromIt, samples::itera
 	maxs_.push_back(maxv);
 }
 
+samples cSoundProperties::chunkOfMag(int from, int to) {
+	samples chunkMag;
+	double maxMag = 0.;
+
+	for (int i = from; i < to; ++i) {
+		auto f = freq_(i);
+		assert(mag_.size() < f);
+		chunkMag.push_back(mag_.at(f));
+		maxMag = std::max(maxMag, mag_.at(f));
+
+	}
+	_dbg1(maxMag);
+	return chunkMag;
+}

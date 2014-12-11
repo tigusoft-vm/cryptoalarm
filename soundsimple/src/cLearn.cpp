@@ -24,16 +24,9 @@ bool cLearn::fileExist(std::string filename) {
 
 void cLearn::start() {
 	auto Buffer = getBuffFromFile();
+	auto snd = prepareSound(Buffer);
 
-	unsigned int SampleRate = Buffer.GetSampleRate();
-	unsigned int Channels = Buffer.GetChannelsCount();
-	float Duration = Buffer.GetDuration();
-	std::size_t SamplesCount = Buffer.GetSamplesCount();
-
-	cout << "Sample rate: " << SampleRate << endl;
-	cout << "Channels: " << Channels << endl;
-	cout << "Duration: " << Duration << endl;
-	cout << "Samples count: " << SamplesCount << endl;
+	cSoundProperties sndProp(snd->getMag(), snd->getFreq());
 
 }
 
@@ -46,4 +39,25 @@ sf::SoundBuffer cLearn::getBuffFromFile() {
 
 cLearn::~cLearn() {
 	// TODO Auto-generated destructor stub
+}
+
+std::shared_ptr<cSound> cLearn::prepareSound(sf::SoundBuffer& Buffer) {
+	auto snd = std::make_shared<cSound>(false);
+
+	snd->setSimulationMode();
+
+	const sf::Int16* Samples = Buffer.GetSamples();
+	unsigned int SampleRate = Buffer.GetSampleRate();
+	unsigned int Channels = Buffer.GetChannelsCount();
+	float Duration = Buffer.GetDuration();
+	std::size_t SamplesCount = Buffer.GetSamplesCount();
+
+	cout << "Sample rate: " << SampleRate << endl;
+	cout << "Channels: " << Channels << endl;
+	cout << "Duration: " << Duration << endl;
+	cout << "Samples count: " << SamplesCount << endl;
+
+
+	snd->ProccessRecording(Samples, SamplesCount, SampleRate);
+	return snd;
 }

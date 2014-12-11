@@ -40,9 +40,9 @@ class cSound {
 		double sum;
 		double avg;
 		double max;
+
 	};
 	std::string getMessage();
-
 
 private:
 	static std::mutex mtx;
@@ -86,8 +86,12 @@ private:
 	int autodetect(size_t fftw_size, const samples &freq, const samples &mag, unsigned int SampleRate); // old way to detect alarm, not used at now
 
 public:
-	void setLearnMode(bool learnMode){
-		this->learnMode = learnMode;
+	const samples& getFreq() const {
+		return freq;
+	}
+
+	const samples& getMag() const {
+		return mag;
 	}
 
 };
