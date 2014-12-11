@@ -44,8 +44,6 @@ cLearn::~cLearn() {
 std::shared_ptr<cSound> cLearn::prepareSound(sf::SoundBuffer& Buffer) {
 	auto snd = std::make_shared<cSound>(false);
 
-	snd->setSimulationMode();
-
 	const sf::Int16* Samples = Buffer.GetSamples();
 	unsigned int SampleRate = Buffer.GetSampleRate();
 	unsigned int Channels = Buffer.GetChannelsCount();

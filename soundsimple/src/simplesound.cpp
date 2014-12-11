@@ -9,10 +9,10 @@
 using namespace std;
 namespace po = boost::program_options;
 
-void startAlarm(bool simulation, bool learnMode) {
+void startAlarm(bool simulation) {
 	cRecorder rec;
 	if (simulation) rec.setSimulationMode();
-	if (learnMode) rec.setLearningMode();
+
 	rec.startRecording();
 }
 
@@ -20,11 +20,9 @@ int handleCommand(const po::variables_map &vm, const po::options_description &de
 	try {
 		if (vm.count("help") || argc == 1) cout << desc << endl;
 
-		else if (vm.count("active-alarm")) startAlarm(false, false);
+		else if (vm.count("active-alarm")) startAlarm(false);
 
-		else if (vm.count("simulation-mode")) startAlarm(true, false);
-
-		else if (vm.count("learn-mode")) startAlarm(false, true);
+		else if (vm.count("simulation-mode")) startAlarm(true);
 
 		else if (vm.count("learn")) {
 			string rec = vm["learn"].as<string>();
@@ -51,7 +49,6 @@ int main(int argc, char *argv[]) {
 		("active-alarm,a", "starting alarm")
 		("simulation-mode,s", "start detecting alarm without notification")
 		("learn,l", po::value<string>(), "learn new alarm from recording")
-		("learn-mode,m", "learn mode" )
 		;
 
 		po::variables_map vm;

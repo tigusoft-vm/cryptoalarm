@@ -54,9 +54,3 @@ void cRecorder::setSimulationMode() {
 	Recorder.setSimulationMode(true);
 	cSend::simulationMode = true;
 }
-
-void cRecorder::setLearningMode() {
-	_info("learning mode");
-	Recorder.setLearnMode(true);
-	cSend::simulationMode = true;
-}

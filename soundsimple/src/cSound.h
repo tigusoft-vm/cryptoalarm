@@ -64,7 +64,6 @@ private:
 	bool isEventNow;
 	int noiseLvl;
 	std::string reason;
-	bool learnMode;
 
 	samples mag;
 	samples freq;

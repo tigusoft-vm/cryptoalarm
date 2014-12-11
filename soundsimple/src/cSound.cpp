@@ -20,8 +20,7 @@ mutex cSound::mtx;
 
 cSound::cSound(bool isEvent) :
 		simulation_(false), minAlarm(1.), energy_(0), confirmation(0),
-				wasAlarm(false), isEventNow(isEvent), noiseLvl(0), method(sendingMethod::XMPP),
-				learnMode(false)
+				wasAlarm(false), isEventNow(isEvent), noiseLvl(0), method(sendingMethod::XMPP)
 {
 	if (n == 0) createThreadForSendScript();
 	n++;
