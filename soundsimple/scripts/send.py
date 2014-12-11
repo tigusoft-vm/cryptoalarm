@@ -15,11 +15,11 @@ def sign(filename) :
 	command1 = "echo \"SIGN-NEXTKEY\" >> $HOME/chainsign/fifo"
 	print command1
 	logging.info(command1)
-	#os.system(command1) 
+	os.system(command1) 
 	command2 = "echo  \"" + filename + "\" >> $HOME/chainsign/fifo"
 	print command2
 	logging.info(command2)
-	#os.system(command2) 
+	os.system(command2) 
 
 def getPackedFilename(filename) : 
 	raw = filename.split(".")
@@ -29,8 +29,8 @@ def getPackedFilename(filename) :
 
 
 def waitForFile(packedFile) :
-	exist = True
-	#exist = False
+	#exist = True
+	exist = False
 	print "waiting for " + packedFile
 	logging.info("waiting for " + packedFile)
 
@@ -41,19 +41,19 @@ def waitForFile(packedFile) :
 	logging.info("found " + packedFile)
 
 def sendMail(message, filename) :
-	command = "cd $HOME/PyMailSender ; ./sendmail.py ALARM " + " \"" + message + "\" " + filename 
+	command = "$HOME/PyMailSender/sendmail.py ALARM " + " \"" + message + "\" " + filename 
 	print command 
 	sftp_cmd = "cp " + filename + " $HOME/sftp " 
 	print sftp_cmd 
 	logging.info(command) 
 	logging.info(sftp_cmd) 
-	#os.system(command2)
-	#os.system(command)
+	os.system(sftp_cmd)
+	os.system(command)
 
 def sendXMPP(message) : 
 	command = "$HOME/motion-alert/soundsimple/scripts/send-xmpp.sh " + " \"" + message + "\" " 
 	print command
-	#os.system(command)
+	os.system(command)
 	logging.info(command)
 
 #for a in sys.argv : 

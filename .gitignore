@@ -1,4 +1,6 @@
 *.wav
+*log/
+*.log
 log.txt
 sended.txt
 simplesound
