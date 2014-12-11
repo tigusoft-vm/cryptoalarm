@@ -33,7 +33,7 @@ def waitForFile(packedFile) :
 def sendMail(message, filename) :
 	command = "cd $HOME/PyMailSender ; ./sendmail.py ALARM " + " \"" + message + "\" " + filename 
 	print command 
-	command2 = "cp " + filename + " $HOME/stfp " 
+	command2 = "cp " + filename + " $HOME/sftp " 
 	print command2
 	os.system(command2)
 	os.system(command)
