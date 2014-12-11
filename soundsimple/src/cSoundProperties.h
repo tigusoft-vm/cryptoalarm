@@ -26,8 +26,7 @@ private:
 	const samples mag_;
 	const samples freq_;
 
-	void getDataFromChunk(samples::iterator fromIt, samples::iterator toIt);
-	void generateChatacteristicData(samples &mag);
+	void generateChatacteristicData();
 
 	samples chunkOfMag(int from, int to);
 	samples avgs_;
