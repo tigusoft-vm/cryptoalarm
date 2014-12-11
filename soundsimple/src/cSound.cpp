@@ -140,7 +140,6 @@ void cSound::normalize(samples &mag, double maxMag, size_t fftw_size) {
 	for (size_t i = 0; i < fftw_size; i++) {
 		mag.at(i) /= maxMag;
 		energy += mag.at(i);
-		//if (mag.at(i) >= threshold) _dbg1(mag.at(i) << "\t" << freq.at(i));
 	}
 	energy_ = energy;
 
@@ -191,8 +190,6 @@ int cSound::Interpret(const samples &mag, unsigned int SampleRate, size_t N) {
 	if (noiseLvl >= 4) {
 		_info_c(SND_LOG, "noise");_info_c(SND_LOG, "Noise! "<<noiseLvl);
 	}
-
-	//_dbg1("noiseLvl=" << noiseLvl << " typicalEnergyNow "<<typicalEnergyNow);
 
 	const auto range1 = getSection(mag, 550, 1200, SampleRate, N);
 	if (IsInRange(range1->max, 0.85, 1.)) {
@@ -313,8 +310,6 @@ void cSound::plotResults(const samples &x, const samples &y) {
 		//g1.set_style("points").plot_xy(magX,magRange,"magnitude");
 
 		wait_for_key();
-//		thread waitTh(&cSound::wait_for_key, this);
-//		waitTh.detach();
 	}
 	catch (GnuplotException & ge) {
 		cout << ge.what() << endl;
@@ -351,9 +346,7 @@ int cSound::autodetect(size_t fftw_size, const samples& freq, const samples& mag
 	int detectHigh = 5500;
 
 	int LowInd = detectLow / ((1.0 / fftw_size) * SampleRate);
-	//_dbg3("Low: " << LowInd);
 	int HighInd = detectHigh / ((1.0 / fftw_size) * SampleRate);
-	//_dbg3("High: " << HighInd);
 
 	vector<double> magRange;
 	vector<double> magX;

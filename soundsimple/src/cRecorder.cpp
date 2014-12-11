@@ -26,6 +26,12 @@ void cRecorder::startRecording() {
 	_fact("start recording");
 	Recorder.Start();
 	{
+		/**
+		 * Sound is recording in new thread
+		 * (implemented in sfml).
+		 *
+		 * This thread waits for exit key
+		 */
 		waitForExitKey();
 	}
 	Recorder.Stop();

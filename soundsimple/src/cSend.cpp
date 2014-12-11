@@ -27,7 +27,6 @@ cSend::~cSend()
 
 void cSend::alarmHandler() {
 	while (true) {
-		//_note(cSound::alarmsToSend.size());
 		if (cSound::alarmsToSend.empty()) sleep(1); // nothing to send
 		else {
 			_scope_fact("sending xmpp message from queue");

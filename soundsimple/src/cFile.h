@@ -14,6 +14,16 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+/**
+ * Saving files (*.wav files at now) in $HOME:
+ * Preparing filenames and directories (using boost filesystem)
+ *
+ *	Alarm_data/
+ *	`-- 2014-12-11
+ *   	`-- 10-21-00
+ *       	`-- 2014-12-11_10-21-00.wav
+ */
+
 class cFile {
 public:
 	cFile();

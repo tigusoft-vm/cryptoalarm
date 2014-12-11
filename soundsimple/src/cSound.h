@@ -12,7 +12,6 @@
 #include "cSections.h"
 
 #define MIN_CONF 5
-//#define MIN_CONF 2
 #define MAX_STANDARD_NOISE 250
 #define MAX_NOISE_LVL 5
 

@@ -8,7 +8,7 @@ send.sh
 DartConfiguration.tcl
 recordings/
 *.orig
-
+*test.sh
 ### Eclipse ###
 *.pydevproject
 .metadata
