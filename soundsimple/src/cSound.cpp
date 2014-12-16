@@ -272,7 +272,8 @@ void cSound::alarm() {
 	_mark_c(SND_LOG, "alarm (confirmations): " << this->confirmation);
 	this->wasAlarm = true;
 	ostringstream message;
-	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation;
+	message << currentDateTime() << "  ALARM DETECTED: " << this->confirmation << std::endl
+	<< "NOISE LVL " << noiseLvl;
 
 	if (simulation_) reason += " <!SIMULATION!>";
 	if (!isEventNow) { 	// is event, don't send message

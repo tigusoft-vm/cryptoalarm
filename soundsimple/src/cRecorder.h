@@ -18,7 +18,7 @@
 #define STEREO 2
 #define MONO 1
 #define EVENT_TIME 10
-#define FIRST_FILES_TIME 1
+#define FIRST_FILES_TIME 5
 #define NEXT_FILES_TIME 10
 #define SAVING_LOG "saving_buff"
 

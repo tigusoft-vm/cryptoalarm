@@ -12,11 +12,11 @@ logging.basicConfig(filename='sending.log', level=logging.DEBUG, format='%(ascti
 
 
 def sign(filename) :
-	command1 = "echo \"SIGN-NEXTKEY\" >> $HOME/chainsign/fifo"
+	command1 = "echo \"SIGN-NEXTKEY\" > $HOME/chainsign/fifo"
 	print command1
 	logging.info(command1)
 	os.system(command1) 
-	command2 = "echo  \"" + filename + "\" >> $HOME/chainsign/fifo"
+	command2 = "echo  \"" + filename + "\" > $HOME/chainsign/fifo"
 	print command2
 	logging.info(command2)
 	os.system(command2) 
@@ -45,7 +45,7 @@ def waitForFile(packedFile, filename) :
 			return filename
 			break
 	logging.info("found " + packedFile) 
-	return packadFile
+	return packedFile
 
 def sendMail(message, filename) :
 	command = "$HOME/PyMailSender/sendmail.py ALARM " + " \"" + message + "\" " + filename 
