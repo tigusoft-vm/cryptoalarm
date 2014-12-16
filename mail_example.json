@@ -1,0 +1,21 @@
+{
+  "login": "",
+  "pass" : "",
+  
+  "to" : [
+    ""
+  ],
+
+  "cc" : [
+    "",
+    ""
+  ],
+  
+  "bcc" : [ 
+  ],
+
+
+  "smtpsrv" : "smtp.gmail.com",
+  "port" : 587
+}
+
