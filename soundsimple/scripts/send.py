@@ -49,12 +49,8 @@ def waitForFile(packedFile, filename) :
 
 def sendMail(message, filename) :
 	command = "$HOME/PyMailSender/sendmail.py ALARM " + " \"" + message + "\" " + filename 
-	print command 
-	sftp_cmd = "cp " + filename + " $HOME/sftp " 
-	print sftp_cmd 
+	print command  
 	logging.info(command) 
-	logging.info(sftp_cmd) 
-	os.system(sftp_cmd)
 	os.system(command)
 
 def sendXMPP(message) : 
@@ -63,8 +59,22 @@ def sendXMPP(message) :
 	os.system(command)
 	logging.info(command)
 
-#for a in sys.argv : 
-#	print a
+def sftp(filename) : 
+	f = os.popen("mount | tail -n 1 | awk '{print $5}'")
+        type = f.read()
+	
+	# search for mounted sftp 
+	if type == "fuse.sshfs\n" :
+		f = os.popen("mount | tail -n 1 | awk '{print $3}'")
+        	path = f.read() # get directory mounted sftp
+		sftp_cmd = "cp " + filename + " " + path
+		logging.info(sftp_cmd)
+		os.system(sftp_cmd)
+	else :
+		logging.info("can't find sftp directory!")
+		return 1
+	return 0
+
 message = sys.argv[2] 
 logging.info(message + " " + sys.argv[1]) 
 if sys.argv[1] == "mail" :
@@ -75,9 +85,10 @@ if sys.argv[1] == "mail" :
 	
 	filetosend = waitForFile(packedFile, filename) 
 	sendMail(message, filetosend)
-	#sendMail(message, filename)
-	#getPackedFilename(sys.argv[3]) 
+	sftp(filetosend)
+	
 elif sys.argv[1] == "xmpp" : 
 	sendXMPP(message) 
 else :
 	print "error"
+
