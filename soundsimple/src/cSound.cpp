@@ -47,7 +47,7 @@ bool cSound::ProccessRecording(const sf::Int16* Samples, std::size_t SamplesCoun
 	// frequencies and magnitude vectors
 	this->freq = calculateFrequencies(SampleRate, fftw_size);
 	this->mag = calculateMagnitude(fftw_size, out);
-	_dbg2("mag: " << mag.size() << ", freq: " << freq.size());
+	//_dbg2("mag: " << mag.size() << ", freq: " << freq.size());
 	// remove fftw data
 	fftw_destroy_plan(p);
 	fftw_free(in);
