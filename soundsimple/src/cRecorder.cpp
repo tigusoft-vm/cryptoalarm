@@ -54,3 +54,8 @@ void cRecorder::setSimulationMode() {
 	Recorder.setSimulationMode(true);
 	cSend::simulationMode = true;
 }
+
+cAlarmSoundRecorder::cAlarmSoundRecorder()
+{
+	mKeysStorage.GenerateRSAKey(KEY_SIZE, cFile::getHomeDir() + "Alarm_data/key_" + std::to_string(mKeysStorage.getCurrentKey()) + ".pub");
+}

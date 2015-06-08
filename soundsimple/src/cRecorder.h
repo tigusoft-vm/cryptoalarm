@@ -35,6 +35,7 @@ public:
 		this->simulationMode = simulationMode;
 		_dbg3(simulationMode);
 	}
+	cAlarmSoundRecorder();
 private:
 	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<
 			cSoundFrame>(CBUFF_SIZE);
@@ -49,7 +50,6 @@ private:
 	std::string message = "";
 	
 	// chainsign
-	unsigned int mKeyNumber = 0;
 	cKeysStorage mKeysStorage;
 	
 	virtual bool OnStart() {
@@ -93,13 +93,17 @@ private:
 			_note_c(SAVING_LOG, "File saved " << filename);
 			
 			_dbg1("start sign file " << filename);
-			_dbg1("std::to_string(mKeyNumber) " << std::to_string(mKeyNumber));
-			_dbg1("date " << date);
-			_dbg1("cFile::getWorkDir(filename) " << cFile::getWorkDir(filename));
-			_dbg1("pub filename " << cFile::getWorkDir(filename) + "/key" + std::to_string(mKeyNumber) + ".pub");
-			mKeysStorage.GenerateRSAKey(KEY_SIZE, cFile::getWorkDir(filename) + "/key_" + std::to_string(mKeyNumber) + ".pub");
+			_dbg2("generate key");
+			const std::string key_name(cFile::getWorkDir(filename) + "/key_" + std::to_string(mKeysStorage.getCurrentKey()) + ".pub");
+			mKeysStorage.GenerateRSAKey(KEY_SIZE, key_name);
+			_dbg2("sign key");
+			mKeysStorage.RSASignFile(key_name, key_name + ".sig", false);
+			_dbg2("sign file");
+			mKeysStorage.RSASignFile(filename, filename + ".sig", false);
+			mKeysStorage.RemoveRSAKey();
+			_note("test verify file " << filename << " using " << key_name);
+			mKeysStorage.RSAVerifyFile(filename + ".sig", key_name);
 			cSend::sendMailNotificationMessage(mess, filename);
-			++mKeyNumber;
 		}
 
 		mRawBuffer.clear();
