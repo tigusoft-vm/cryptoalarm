@@ -32,6 +32,7 @@ public:
 	static std::vector <std::string> splitString(std::string &toSplit, std::string delimiter);
 	static std::string getFilename(std::string date);
 	static std::string getHomeDir();
+	static std::string getWorkDir(std::string filename);
 	static std::string dealWithDir(const std::string &date, const std::string &time);
 };
 

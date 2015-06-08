@@ -12,6 +12,7 @@
 #include "cSoundFrame.h"
 #include "cSend.h"
 #include "cFile.h"
+#include "chainsign/ckeysstorage.h"
 #include <boost/circular_buffer.hpp>
 
 #define CBUFF_SIZE 200
@@ -21,6 +22,7 @@
 #define FIRST_FILES_TIME 5
 #define NEXT_FILES_TIME 10
 #define SAVING_LOG "saving_buff"
+#define KEY_SIZE 2048
 
 const std::string recDirName = "recordings/";
 
@@ -45,7 +47,11 @@ private:
 	bool simulationMode = false;
 	unsigned int mSavedFiles = 0;
 	std::string message = "";
-
+	
+	// chainsign
+	unsigned int mKeyNumber = 0;
+	cKeysStorage mKeysStorage;
+	
 	virtual bool OnStart() {
 		std::cout << "Start sound recorder" << std::endl;
 		return true;
@@ -85,7 +91,15 @@ private:
 			assert(this->message != "");
 			_note("File saved " << filename);
 			_note_c(SAVING_LOG, "File saved " << filename);
+			
+			_dbg1("start sign file " << filename);
+			_dbg1("std::to_string(mKeyNumber) " << std::to_string(mKeyNumber));
+			_dbg1("date " << date);
+			_dbg1("cFile::getWorkDir(filename) " << cFile::getWorkDir(filename));
+			_dbg1("pub filename " << cFile::getWorkDir(filename) + "/key" + std::to_string(mKeyNumber) + ".pub");
+			mKeysStorage.GenerateRSAKey(KEY_SIZE, cFile::getWorkDir(filename) + "/key_" + std::to_string(mKeyNumber) + ".pub");
 			cSend::sendMailNotificationMessage(mess, filename);
+			++mKeyNumber;
 		}
 
 		mRawBuffer.clear();

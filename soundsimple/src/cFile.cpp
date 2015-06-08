@@ -56,6 +56,15 @@ std::string cFile::getHomeDir() {
 	return home;
 }
 
+std::string cFile::getWorkDir(std::string filename) {
+	std::string path(filename);
+	while (path.back() != '/') {
+		path.pop_back();
+	}
+	path.pop_back();
+	return path;
+}
+
 std::string cFile::dealWithDir(const std::string& date, const std::string& time) {
 	_note(getHomeDir());
 	std::string path = getHomeDir() + "Alarm_data/" + date + "/" + time;
