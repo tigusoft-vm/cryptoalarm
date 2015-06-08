@@ -97,7 +97,7 @@ private:
 			const std::string key_name(cFile::getWorkDir(filename) + "/key_" + std::to_string(mKeysStorage.getCurrentKey()) + ".pub");
 			mKeysStorage.GenerateRSAKey(KEY_SIZE, key_name);
 			_dbg2("sign key");
-			mKeysStorage.RSASignFile(key_name, key_name + ".sig", false);
+			mKeysStorage.RSASignFile(key_name, key_name + ".sig", true);
 			_dbg2("sign file");
 			mKeysStorage.RSASignFile(filename, filename + ".sig", false);
 			mKeysStorage.RemoveRSAKey();
