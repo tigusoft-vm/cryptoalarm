@@ -1,0 +1,2 @@
+add_library(key_storage ckeysstorage.cpp)
+target_link_libraries(key_storage crypto cryptopp)
