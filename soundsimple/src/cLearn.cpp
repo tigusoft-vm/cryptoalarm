@@ -33,7 +33,7 @@ void cLearn::start() {
 sf::SoundBuffer cLearn::getBuffFromFile() {
 	if (!fileExist(this->filename)) throw invalid_argument("File not found");
 	sf::SoundBuffer buffer;
-	buffer.LoadFromFile(this->filename);
+	buffer.loadFromFile(this->filename);
 	return buffer;
 }
 
@@ -44,15 +44,15 @@ cLearn::~cLearn() {
 std::shared_ptr<cSound> cLearn::prepareSound(sf::SoundBuffer& Buffer) {
 	auto snd = std::make_shared<cSound>(false);
 
-	const sf::Int16* Samples = Buffer.GetSamples();
-	unsigned int SampleRate = Buffer.GetSampleRate();
-	unsigned int Channels = Buffer.GetChannelsCount();
-	float Duration = Buffer.GetDuration();
-	std::size_t SamplesCount = Buffer.GetSamplesCount();
+	const sf::Int16* Samples = Buffer.getSamples();
+	unsigned int SampleRate = Buffer.getSampleRate();
+	unsigned int Channels = Buffer.getChannelCount();
+	sf::Time Duration = Buffer.getDuration();
+	std::size_t SamplesCount = Buffer.getSampleCount();
 
 	cout << "Sample rate: " << SampleRate << endl;
 	cout << "Channels: " << Channels << endl;
-	cout << "Duration: " << Duration << endl;
+	cout << "Duration: " << Duration.asSeconds () << endl;
 	cout << "Samples count: " << SamplesCount << endl;
 
 

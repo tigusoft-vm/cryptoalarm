@@ -80,13 +80,13 @@ private:
 		assert(Samples != nullptr && SamplesCount > 0);
 
 		sf::SoundBuffer buff;
-		buff.LoadFromSamples(Samples, SamplesCount, MONO, SampleRate);
-		assert(buff.GetDuration() != 0);
-
-		_dbg2_c(SAVING_LOG, "size of samples(get samples): " << sizeof(buff.GetSamples()));
-		_info_c(SAVING_LOG, "samples count: " << buff.GetSamplesCount() << ", duration: " << buff.GetDuration());
+		buff.loadFromSamples(Samples, SamplesCount, MONO, SampleRate);
+		assert(buff.getDuration() != sf::Time::Zero);
+		
+		_dbg2_c(SAVING_LOG, "size of samples(get samples): " << sizeof(buff.getSamples()));
+		_info_c(SAVING_LOG, "samples count: " << buff.getSampleCount() << ", duration: " << buff.getDuration().asSeconds());
 		std::string filename = cFile::getFilename(date);
-		if (!buff.SaveToFile(filename)) _erro(filename << " not saved :( ");
+		if (!buff.saveToFile(filename)) _erro(filename << " not saved :( ");
 		else {
 			assert(this->message != "");
 			_note("File saved " << filename);
@@ -118,7 +118,7 @@ private:
 	}
 
 	void handleEvent(std::shared_ptr<cSound> &sound) {
-		unsigned int SampleRate = GetSampleRate();
+		unsigned int SampleRate = getSampleRate();
 		diffToAlarm = std::chrono::steady_clock::now() - mAlarmLastTime;
 		if (diffToAlarm < std::chrono::seconds(EVENT_TIME)) {
 			isEvent = true;
@@ -161,7 +161,7 @@ private:
 	 * SamplesCount = size of Samples
 	 */
 	virtual bool OnProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
-		unsigned int SampleRate = GetSampleRate();
+		unsigned int SampleRate = getSampleRate();
 		createAndSaveFrameToCBuff(Samples, SamplesCount);
 
 		auto sound = std::make_shared<cSound>(isEvent);

@@ -12,9 +12,10 @@ using namespace std;
 cRecorder::cRecorder() :
 		fromMicrophoneMode(true)
 {
-	assert(sf::SoundBufferRecorder::CanCapture()); // audio capture must be supported
+	assert(sf::SoundBufferRecorder::isAvailable()); // audio capture must be supported
 	if (!boost::filesystem::exists(recDirName)) boost::filesystem::create_directory(recDirName);
 	cSend::simulationMode = false;
+		
 }
 
 cRecorder::~cRecorder()
@@ -23,8 +24,10 @@ cRecorder::~cRecorder()
 }
 
 void cRecorder::startRecording() {
+	
+	
 	_fact("start recording");
-	Recorder.Start();
+	Recorder.start();
 	{
 		/**
 		 * Sound is recording in new thread
@@ -34,7 +37,7 @@ void cRecorder::startRecording() {
 		 */
 		waitForExitKey();
 	}
-	Recorder.Stop();
+	Recorder.stop();
 }
 
 void cRecorder::waitForExitKey() {
