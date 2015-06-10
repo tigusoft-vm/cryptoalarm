@@ -29,6 +29,9 @@ if(NOT SFML_FOUND)
 		"${CMAKE_SOURCE_DIR}/deps/SFML/include/"
 	
 	) 
+	set (SFML_LIBRARIES
+ 	"${CMAKE_SOURCE_DIR}/build/deps/SFML/lib/"
+  )
 	MESSAGE(STATUS "Using SFML include dir ${SFML_INCLUDE_DIR}")
 endif()
 
