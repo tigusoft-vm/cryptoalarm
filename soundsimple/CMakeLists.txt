@@ -4,10 +4,33 @@ cmake_minimum_required(VERSION 2.8.6)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 find_package(Boost 1.49 REQUIRED COMPONENTS system filesystem iostreams)
 set(Boost_LIBRARIES "${Boost_LIBRARIES}")
-find_library(SFML 1.6 REQUIRED COMPONENTS system window audio)
+#find_library(SFML 2.0 REQUIRED COMPONENTS system window audio)
+#find_package(SFML 2.0 REQUIRED COMPONENTS system window audio)
 find_library(FFTW3_LIBRARIES NAMES fftw3 libfftw3)
 
 option(BUILD_TESTS "Build the unit tests." OFF)
+
+
+
+# Detect and add SFML
+# set(CMAKE_MODULE_PATH "/home/gab-dev/.local/share/SFML/cmake/Modules" ${CMAKE_MODULE_PATH})
+#Find any version 2.X of SFML
+#See the FindSFML.cmake file for additional details and instructions
+execute_process(COMMAND git "submodule" "update" "--init" "--recursive")
+
+
+find_package(SFML 2.0 COMPONENTS system window graphics network audio)
+
+
+if(NOT SFML_FOUND)
+	MESSAGE("SFML not found")
+	add_subdirectory(deps/SFML)
+	set(SFML_INCLUDE_DIR
+		"deps/SFML/include/"
+	) 
+
+endif()
+
 
 
 
