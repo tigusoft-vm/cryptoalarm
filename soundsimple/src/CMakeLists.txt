@@ -6,8 +6,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wl,--no-as-needed -pthread -std=c++11"
 
 set(SFML_LIBRARIES_DIR "${CMAKE_SOURCE_DIR}/deps/SFML/lib")
 set(SFML_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/deps/SFML/include")
-message(STATUS "**************SFML_LIBRARIES ${SFML_LIBRARIES_DIR}")
-message(STATUS "**************SFML_INCLUDE_DIR ${SFML_INCLUDE_DIR}")
 
 add_executable(simplesound ${SIMPLESOUND})
 

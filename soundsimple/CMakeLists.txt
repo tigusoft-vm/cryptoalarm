@@ -54,9 +54,6 @@ if(BUILD_TESTS)
 endif()
 
 
-execute_process(COMMAND git "submodule" "update" "--init" "--recursive")
-
-
 
 
 add_subdirectory(deps)
