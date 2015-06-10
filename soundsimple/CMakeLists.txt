@@ -26,9 +26,10 @@ if(NOT SFML_FOUND)
 	MESSAGE("SFML not found")
 	add_subdirectory(deps/SFML)
 	set(SFML_INCLUDE_DIR
-		"deps/SFML/include/"
+		"${CMAKE_SOURCE_DIR}/deps/SFML/include/"
+	
 	) 
-
+	MESSAGE(STATUS "Using SFML include dir ${SFML_INCLUDE_DIR}")
 endif()
 
 
