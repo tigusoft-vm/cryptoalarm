@@ -1,3 +1,6 @@
 [submodule "soundsimple/deps/gtest"]
 	path = soundsimple/deps/gtest
 	url = https://github.com/monetas/gtest.git
+[submodule "soundsimple/deps/SFML"]
+	path = soundsimple/deps/SFML
+	url = https://github.com/SFML/SFML.git
