@@ -1,2 +1,2 @@
 add_library(key_storage ckeysstorage.cpp)
-target_link_libraries(key_storage pto cryptopp boost_system boost_filesystem boost_program_options)
+target_link_libraries(key_storage cryptopp boost_system boost_filesystem boost_program_options)

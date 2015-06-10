@@ -16,24 +16,27 @@ option(BUILD_TESTS "Build the unit tests." OFF)
 # set(CMAKE_MODULE_PATH "/home/gab-dev/.local/share/SFML/cmake/Modules" ${CMAKE_MODULE_PATH})
 #Find any version 2.X of SFML
 #See the FindSFML.cmake file for additional details and instructions
-execute_process(COMMAND git "submodule" "update" "--init" "--recursive")
+#execute_process(COMMAND git "submodule" "update" "--init" "--recursive")
 
 
-find_package(SFML 2.0 COMPONENTS system window graphics network audio)
+#find_package(SFML 2.0 COMPONENTS system window graphics network audio)
 
+# ExternalProject_Add(SFML
+# 	GIT_REPOSITORY https://github.com/SFML/SFML.git
+# 	)
 
-if(NOT SFML_FOUND)
-	MESSAGE("SFML not found")
-	add_subdirectory(deps/SFML)
-	set(SFML_INCLUDE_DIR
-		"${CMAKE_SOURCE_DIR}/deps/SFML/include/"
-	
-	) 
-	set (SFML_LIBRARIES
- 	"${CMAKE_SOURCE_DIR}/build/deps/SFML/lib/"
-  )
-	MESSAGE(STATUS "Using SFML include dir ${SFML_INCLUDE_DIR}")
-endif()
+# if(NOT SFML_FOUND)
+# 	MESSAGE("SFML not found")
+# 	add_subdirectory(deps/SFML)
+# 	set(SFML_INCLUDE_DIR
+# 		"${CMAKE_SOURCE_DIR}/deps/SFML/include/"
+# 	
+# 	) 
+# 	set (SFML_LIBRARIES
+#  	"${CMAKE_SOURCE_DIR}/build/deps/SFML/lib/"
+#   )
+# 	MESSAGE(STATUS "Using SFML include dir ${SFML_INCLUDE_DIR}")
+# endif()
 
 
 
@@ -56,7 +59,7 @@ execute_process(COMMAND git "submodule" "update" "--init" "--recursive")
 
 
 
-#add_subdirectory(deps)
+add_subdirectory(deps)
 add_subdirectory(src)
 #add_subdirectory(tests)
 
