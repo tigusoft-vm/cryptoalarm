@@ -18,3 +18,12 @@ target_link_libraries(simplesound otshell_utils boost_system boost_filesystem bo
 #-lm -lsfml-graphics -lboost_iostreams -lboost_system -lboost_filesystem -lfftw3 -lsfml-audio -lsfml-window -lsfml-system
 
 add_subdirectory(chainsign)
+
+MESSAGE( STATUS "executable:  ${CMAKE_CURRENT_BINARY_DIR}/simplesound ")
+
+
+add_custom_target(run
+  COMMAND simplesound -a
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+
+)

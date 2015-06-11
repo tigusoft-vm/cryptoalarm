@@ -1,3 +1,5 @@
+soundsimple/build/ 
+
 *.wav
 *log/
 *.log
