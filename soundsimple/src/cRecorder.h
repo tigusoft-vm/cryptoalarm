@@ -160,7 +160,7 @@ private:
 	 *
 	 * SamplesCount = size of Samples
 	 */
-	virtual bool OnProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
+	virtual bool onProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
 		unsigned int SampleRate = getSampleRate();
 		createAndSaveFrameToCBuff(Samples, SamplesCount);
 
