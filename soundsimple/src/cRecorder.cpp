@@ -15,7 +15,7 @@ cRecorder::cRecorder() :
 	assert(sf::SoundBufferRecorder::isAvailable()); // audio capture must be supported
 	if (!boost::filesystem::exists(recDirName)) boost::filesystem::create_directory(recDirName);
 	cSend::simulationMode = false;
-		
+	audioDevice_manage(true);
 }
 
 cRecorder::~cRecorder()
