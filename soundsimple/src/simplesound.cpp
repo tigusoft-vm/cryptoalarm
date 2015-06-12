@@ -163,15 +163,6 @@ int main(int argc, char *argv[]) {
 	// C way <csignals>
 	signal(SIGINT, signalHandler);  
 	
-	std::cout << "handling test" << std::endl;
-	long long c =0;
-	for(int i = 0; i < 1000000; i++){
-		while(c < 10000000){
-			if(c%3 == 0) --c;
-			c++;
-		}
-	}
-	
 	try {
 		string opt;
 
