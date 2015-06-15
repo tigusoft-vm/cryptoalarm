@@ -163,6 +163,14 @@ int main(int argc, char *argv[]) {
 	// C way <csignals>
 	signal(SIGINT, signalHandler);  
 	
+	// Checking, creating if necessary Alarm_data directory.
+	struct passwd *pw = getpwuid(getuid());
+	string alarm_Data_dir = pw->pw_dir;
+	alarm_Data_dir += "/Alarm_data";
+	if(!boost::filesystem::is_directory(alarm_Data_dir)){
+		auto d = boost::filesystem::create_directory(alarm_Data_dir);
+		_dbg2(d);
+	}
 	try {
 		string opt;
 
