@@ -140,6 +140,7 @@ void cSound::normalize(samples &mag, double maxMag, size_t fftw_size) {
 		mag.at(i) /= maxMag;
 		energy += mag.at(i);
 	}
+	energy /= fftw_size;
 	energy_ = energy;
 
 	_dbg2_c(SND_LOG, "energy: " << energy);
