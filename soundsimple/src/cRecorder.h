@@ -228,7 +228,7 @@ private:
 	/// Working only on sfml (>= 2.3) version.
 	/// manage == false -- only return current device name
 	/// manage == true -- allows you to choose device
-	std::string audioDevice_manage(bool manage = true);
+    std::string audioDevice_manage();
 };
 
 #endif /* CRECORDER_H_ */

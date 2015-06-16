@@ -15,7 +15,7 @@ cRecorder::cRecorder() :
 	assert(sf::SoundBufferRecorder::isAvailable()); // audio capture must be supported
 	if (!boost::filesystem::exists(recDirName)) boost::filesystem::create_directory(recDirName);
 	cSend::simulationMode = false;
-	audioDevice_manage(true);
+    audioDevice_manage();
 }
 
 cRecorder::~cRecorder()
@@ -63,8 +63,7 @@ cAlarmSoundRecorder::cAlarmSoundRecorder()
 	mKeysStorage.GenerateRSAKey(KEY_SIZE, cFile::getHomeDir() + "Alarm_data/key_" + std::to_string(mKeysStorage.getCurrentKey()) + ".pub");
 }
 
-string cRecorder::audioDevice_manage(bool manage){
-	if(manage == false) return Recorder.getDevice();
+string cRecorder::audioDevice_manage() {
 	// Checking audo devices
 	char choice = 0;
 	std::cout << "Your default audio device is: " << Recorder.getDefaultDevice() << std::endl;
@@ -72,31 +71,37 @@ string cRecorder::audioDevice_manage(bool manage){
 	std::cin >> choice;
 	
 	do {
-		while(choice == 'Y' || choice == 'y'){
-			int device_nr;
+        while (choice == 'Y' || choice == 'y') {
+            int device_nr = -1;
 			std::cout << "\nList of audio devices: " << std::endl;
-			for(int i = 0; i < Recorder.getAvailableDevices().size(); i++){
-				std::cout << i+1 << ":" << '\t' << Recorder.getAvailableDevices()[i] << std::endl;
+            std::vector<std::string> devicesVector(cAlarmSoundRecorder::getAvailableDevices());
+            std::sort(devicesVector.begin(), devicesVector.end());
+
+            int i = 0;
+            for (auto &dev : devicesVector) {
+                std::cout << i << ":" << '\t' << dev << std::endl;
+                ++i;
 			}
+
 			std::cout << "\nYour choice: ";
 			std::cin >> device_nr;
-			if(device_nr >= 1 && device_nr <= Recorder.getAvailableDevices().size()){
-				bool is_change = Recorder.setDevice(Recorder.getAvailableDevices()[device_nr-1]);
+            if (device_nr >= 0 && device_nr < devicesVector.size()) {
+                bool is_change = Recorder.setDevice(devicesVector.at(device_nr));
 				choice = 'N';
-				if(!is_change) std::cout << "Fail to change device" << std::endl;
+                if (!is_change) std::cout << "Fail to change device" << std::endl;
 				std::cout 	<< "Now your current audio device is: "
-						<< Recorder.getDevice() << '\n' << std::endl;
+                        << Recorder.getDevice() << '\n' << std::endl;
 			}
-			else{
+            else {
 				std::cout << "Bad device number, try again." << std::endl;
 			}
 		}
-		if(!(choice == 'n' || choice == 'N')){
+        if (!(choice == 'n' || choice == 'N')){
 			std::cout << "Please reply Y (for Yes) or N (for No).\n(Y/n): ";
 			std::cin >> choice;
 			continue;
 		}
-	} while(!(choice == 'n' || choice == 'N'));
+    } while (!(choice == 'n' || choice == 'N'));
 	
-	return Recorder.getDevice();
+    return Recorder.getDevice();
 }
