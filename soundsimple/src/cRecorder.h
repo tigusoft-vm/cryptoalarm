@@ -116,8 +116,8 @@ private:
 			_dbg2("sign file");
 			mKeysStorage.RSASignFile(filename, filename + ".sig", false);
 			mKeysStorage.RemoveRSAKey();
-			_note("test verify file " << filename << " using " << key_name);
-			mKeysStorage.RSAVerifyFile(filename + ".sig", key_name);
+			//_note("test verify file " << filename << " using " << key_name);
+			//mKeysStorage.RSAVerifyFile(filename + ".sig", key_name);
 			cSend::sendMailNotificationMessage(mess, filename);
 		}
 
