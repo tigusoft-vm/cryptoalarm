@@ -77,15 +77,30 @@ private:
 	}
 
 	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string date, std::string mess) {
+		for (int i = 0; i < SamplesCount; ++i) {
+			//_mark("saveBuffToFile" << Samples[i]);
+		}
 		assert(Samples != nullptr && SamplesCount > 0);
 
 		sf::SoundBuffer buff;
 		buff.loadFromSamples(Samples, SamplesCount, MONO, SampleRate);
 		assert(buff.getDuration() != sf::Time::Zero);
-		
+		int numberOfGoodSamples = 0;
+		for (int i = 0; i < buff.getSampleCount(); ++i) {
+			if (buff.getSamples()[i] < -10 || buff.getSamples()[i] > 10) {
+				++numberOfGoodSamples;
+			}
+		}
+		_mark("numberOfGoodSamples " << numberOfGoodSamples);
+		if (numberOfGoodSamples == 0) {
+			return;
+		}
 		_dbg2_c(SAVING_LOG, "size of samples(get samples): " << sizeof(buff.getSamples()));
 		_info_c(SAVING_LOG, "samples count: " << buff.getSampleCount() << ", duration: " << buff.getDuration().asSeconds());
 		std::string filename = cFile::getFilename(date);
+		_mark("save buff to file " << filename);
+		_mark("sample rate " << buff.getSampleRate());
+		_mark("channel count " << buff.getChannelCount());
 		if (!buff.saveToFile(filename)) _erro(filename << " not saved :( ");
 		else {
 			assert(this->message != "");
@@ -123,7 +138,12 @@ private:
 		if (diffToAlarm < std::chrono::seconds(EVENT_TIME)) {
 			isEvent = true;
 			auto vecOfSamples = mergeCBuff();
-
+			//_mark("size " << vecOfSamples.size());
+			for (auto a : vecOfSamples) {
+				if (a != 0) {
+					//_mark(a);
+				}
+			}
 			// saving last 20s
 			if (!savedMinusFile) {
 				_dbg2_c(SAVING_LOG, "saving 20s file");
@@ -161,6 +181,11 @@ private:
 	 * SamplesCount = size of Samples
 	 */
 	virtual bool onProcessSamples(const sf::Int16* Samples, std::size_t SamplesCount) {
+		for (int i = 0; i < SamplesCount; ++i) {
+			if (Samples[i] != 0) {
+				// _mark(Samples[i]);
+			}
+		}
 		unsigned int SampleRate = getSampleRate();
 		createAndSaveFrameToCBuff(Samples, SamplesCount);
 
