@@ -35,7 +35,9 @@ void cRecorder::startRecording() {
 		 *
 		 * This thread waits for exit key
 		 */
-		waitForExitKey();
+		while(!FLAG_signalHandler);
+		//waitForExitKey();
+		
 	}
 	Recorder.stop();
 }
@@ -44,11 +46,14 @@ void cRecorder::waitForExitKey() {
 	_dbg2("Waiting for exit key");
 	string userInput;
 	int a = 0;
-	while (true) {
+
+	while(true) {
 		cout << "q to quit" << endl;
 		cin >> userInput;
 		a++;
-		if (userInput == "q" || a == 10) break; // why a==10?
+		if (userInput == "q" || a == 10 || FLAG_signalHandler) {
+			break;
+		}
 	}
 }
 

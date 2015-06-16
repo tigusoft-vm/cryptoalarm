@@ -25,6 +25,7 @@
 #define KEY_SIZE 2048
 
 const std::string recDirName = "recordings/";
+extern bool FLAG_signalHandler;
 
 class cAlarm {
 };

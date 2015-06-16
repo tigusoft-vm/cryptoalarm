@@ -18,29 +18,14 @@
 using namespace std;
 namespace po = boost::program_options;
 
-/// boost way to handle signals (dont work ;/)
-void handler(
-    const boost::system::error_code& error,
-    int signal_number)
-{
-  if (error.value() == SIGINT){
-    std::cout << "Hello Control" << std::endl;
-  }
-}
+bool FLAG_signalHandler;
 
 /// C Signal_Handler <csignal>
 void signalHandler(int signum)
 {
-	std::cout << "\b\bInterrupt signal (" << signum << ") received.\n";
-	std::cout << "Simplesound will close securely by ..." << std::endl;
-	for(int i = 5; i > 0; --i){
-		std::cout << ".. " << i << std::endl;
-		std::this_thread::sleep_for(std::chrono::seconds(1));
-	}
-	std::cout << "exit" << endl;
-    // cleanup and close up stuff here
-    // terminate program
-   exit(signum);
+	FLAG_signalHandler = true;
+//	std::cout << "\b\bInterrupt signal (" << signum << ") received.\n";
+//	cout << "q to quit" << endl;
 }
 
 unsigned int verifyOneFile(const std::string &sigFileName) //fileName = sig file
@@ -118,7 +103,6 @@ unsigned int verifyOneFile(const std::string &sigFileName) //fileName = sig file
 void startAlarm(bool simulation) {
 	cRecorder rec;
 	if (simulation) rec.setSimulationMode();
-
 	rec.startRecording();
 }
 
@@ -152,15 +136,7 @@ int handleCommand(const po::variables_map &vm, const po::options_description &de
 
 int main(int argc, char *argv[]) {
 	int cmd = 0;
-	
-	// boost lib handling
-// 	boost::asio::io_service io_service;
-// 	// Construct a signal set registered for process termination.
-// 	boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
-// 	// Start an asynchronous wait for one of the signals to occur.
-// 	signals.async_wait(handler);
-
-	// C way <csignals>
+	FLAG_signalHandler = false;
 	signal(SIGINT, signalHandler);  
 	
 	// Checking, creating if necessary Alarm_data directory.
