@@ -91,7 +91,7 @@ void cSend::sendMailNotificationMessage(std::string mess, std::string rec) {
 }
 
 void cSend::sendMailHandleErrors(std::string toSend, int n) {
-	_scope_mark("sending email" << toSend);
+	_scope_dbg2("sending email" << toSend);
 	auto err = std::system(toSend.c_str());
 	// log toSend
 	if (err == 0) {

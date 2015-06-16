@@ -91,16 +91,16 @@ private:
 				++numberOfGoodSamples;
 			}
 		}
-		_mark("numberOfGoodSamples " << numberOfGoodSamples);
+		//_mark("numberOfGoodSamples " << numberOfGoodSamples);
 		if (numberOfGoodSamples == 0) {
 			return;
 		}
 		_dbg2_c(SAVING_LOG, "size of samples(get samples): " << sizeof(buff.getSamples()));
 		_info_c(SAVING_LOG, "samples count: " << buff.getSampleCount() << ", duration: " << buff.getDuration().asSeconds());
 		std::string filename = cFile::getFilename(date);
-		_mark("save buff to file " << filename);
-		_mark("sample rate " << buff.getSampleRate());
-		_mark("channel count " << buff.getChannelCount());
+		//_mark("save buff to file " << filename);
+		//_mark("sample rate " << buff.getSampleRate());
+		//_mark("channel count " << buff.getChannelCount());
 		if (!buff.saveToFile(filename)) _erro(filename << " not saved :( ");
 		else {
 			assert(this->message != "");
@@ -193,7 +193,10 @@ private:
 		if (simulationMode) sound->setSimulationMode();
 
 		auto wasAlarm = sound->ProccessRecording(Samples, SamplesCount, SampleRate);
-		if (wasAlarm) handleAlarm(sound);
+		if (wasAlarm) {
+			_mark("!!!ALARM!!!");
+			handleAlarm(sound);
+		}
 
 		handleEvent(sound);
 
