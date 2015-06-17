@@ -4,3 +4,4 @@
 [submodule "chainsign"]
 	path = chainsign
 	url = https://github.com/robertoleksy/chainsign
+	branch = dev
