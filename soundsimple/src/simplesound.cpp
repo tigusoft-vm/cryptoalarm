@@ -31,7 +31,7 @@ void signalHandler(int signum)
 
 cKeysStorage keyStorage;
 
-unsigned int verify(std::string firstKey, const std::string &path) // verify keys, get name of 1st pub file, return last good key
+int verify(std::string firstKey, const std::string &path) // verify keys, get name of 1st pub file, return last good key
 {
 	//_scope_fact("firstKey " << firstKey << " path " << path);
 	std::cout << "start verify keys" << std::endl;
@@ -111,7 +111,9 @@ unsigned int verifyOneFile(const std::string &fileName) //fileName = normal file
 	
 	//_mark("mainDir " << mainDir);
 	//firstPubKey.insert(0, mainDir);
-	unsigned int ret = verify(firstPubKey, mainDir); // verify keys
+	int lastGoodKey;
+	int ret = verify(firstPubKey, mainDir); // verify keys
+	lastGoodKey = ret;
 	if (ret == -1) {
 		std::cout << "***keys verification error***" << std::endl;
 		return 2;
@@ -123,6 +125,12 @@ unsigned int verifyOneFile(const std::string &fileName) //fileName = normal file
 	if (ret == 0) {
 		std::cout << "***file verification error***" << std::endl;
 		return 3;
+	}
+	
+	if (ret > lastGoodKey) {
+		std::cout << "***file verification error***" << std::endl;
+		std::cout << "***pub key < last good key***" << std::endl;
+		return 4;
 	}
 	
 	std::cout << "OK" << std::endl;

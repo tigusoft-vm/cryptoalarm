@@ -29,7 +29,7 @@ public:
 	void loadRSAPrivKey(std::string filename); // filename == for example "key_1.prv"
 	// new format
 	void RSASignNormalFile(const std::string& inputFilename, const std::string& signatureFilename, bool signKey);
-	bool RSAVerifyNormalFile(const std::string& inputFilename, const std::string& signatureFilename, const std::string &dirPath = "");
+	unsigned int RSAVerifyNormalFile(const std::string& inputFilename, const std::string& signatureFilename, const std::string &dirPath = ""); // return number of key used to sign, 0 if verification error
 private:
     std::map <int, CryptoPP::RSA::PrivateKey> mPrvKeys;
     void savePubFile(unsigned int numberOfKey, const CryptoPP::RSA::PublicKey& pPubKey, std::string fileName);

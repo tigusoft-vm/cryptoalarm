@@ -285,7 +285,7 @@ void cKeysStorage::loadRSAPrivKey(std::string filename) {
 	// generate key number from filename
 	unsigned int keyNumber;
 	// key_1.prv
-	std::cout << "filename " << filename << std::endl;
+	//std::cout << "filename " << filename << std::endl;
 	std::string::iterator it = filename.end();
 	it -= 5;
 	while (std::isdigit(*it)) {
@@ -294,7 +294,7 @@ void cKeysStorage::loadRSAPrivKey(std::string filename) {
 	it++;
 	filename.erase(filename.begin(), it);
 	filename.erase(filename.size() - 4); // 1
-	std::cout << "filename " << filename << std::endl;
+	//std::cout << "filename " << filename << std::endl;
 	//filename.erase(0, 4); // 1.prv
 	keyNumber = std::stoi(filename);
 	mPrvKeys.insert(std::pair<int, CryptoPP::RSA::PrivateKey>(keyNumber, prvKey));
@@ -337,7 +337,8 @@ void cKeysStorage::RSASignNormalFile(const std::string& inputFilename, const std
 		++mCurrentKey;
 }
 
-bool cKeysStorage::RSAVerifyNormalFile(const std::string& inputFilename, const std::string& signatureFilename, const std::string &dirPath) {
+// return number of key used to sign, 0 if verification error
+unsigned int cKeysStorage::RSAVerifyNormalFile(const std::string& inputFilename, const std::string& signatureFilename, const std::string &dirPath) {
 	std::ifstream sigFile(signatureFilename);
 	std::string word;
 	sigFile >> word; // "PubKeyFilename"
@@ -357,6 +358,17 @@ bool cKeysStorage::RSAVerifyNormalFile(const std::string& inputFilename, const s
 	//std::cout << std::endl;
 	
 	// load input file
+	
+	std::string keyNumber(pubFileName);
+	std::string::iterator it = keyNumber.end();
+	it -= 5;
+	while (std::isdigit(*it)) {
+		it--;
+	}
+	it++;
+	keyNumber.erase(keyNumber.begin(), it);
+	keyNumber.erase(keyNumber.size() - 4); // 1
+	
 	std::string sourceData;
 	FileSource(inputFilename.c_str(), true, new StringSink(sourceData));
 	
@@ -376,7 +388,7 @@ bool cKeysStorage::RSAVerifyNormalFile(const std::string& inputFilename, const s
 		StringSource(combined, true, 
 			new SignatureVerificationFilter(verifier, NULL, SignatureVerificationFilter::THROW_EXCEPTION) );
 		std::cout << "Signature OK" << std::endl;
-		return true;
+		return std::stoi(keyNumber);
 	}
 	catch(SignatureVerificationFilter::SignatureVerificationFailed &err)
 	{

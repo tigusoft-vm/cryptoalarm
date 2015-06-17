@@ -24,6 +24,7 @@ function chainsign_build() {
 	echo -e "${c}Building chainsign${nc}"
 
 	cd chainsign/
+	git checkout dev
 	cmake . && make
 	chain_path=`pwd`
 	echo "$chain_path" > chainsign.conf
@@ -40,7 +41,7 @@ function handle_param() {
 		echo -e "Build soundsimple:\n\t $cmd soundsimple "
 		exit 1
 	elif [[ "${1}" == "soundsimple" ]]; then
-		chainsign_build
+		#chainsign_build
 		sound_build
 
 	elif [[ "${1}" == "video" ]]; then
