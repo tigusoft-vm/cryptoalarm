@@ -18,13 +18,14 @@
 using namespace std;
 namespace po = boost::program_options;
 
-bool FLAG_signalHandler;
+bool FLAG_signalHandler = false;
 
 /// C Signal_Handler <csignal>
 void signalHandler(int signum)
 {
 	FLAG_signalHandler = true;
-//	std::cout << "\b\bInterrupt signal (" << signum << ") received.\n";
+	//std::cout << "\b\bInterrupt signal (" << signum << ") received.\n";
+	//_fact("\b\bInterrupt signal (" << signum << ") received.\n");
 //	cout << "q to quit" << endl;
 }
 

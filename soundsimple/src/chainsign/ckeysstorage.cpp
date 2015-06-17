@@ -265,9 +265,11 @@ void cKeysStorage::RemoveRSAKey()
 	std::cout << "private keys in memory " << mPrvKeys.size() << std::endl;
 }
 
-void cKeysStorage::saveRSAPrivKey() const{
+void cKeysStorage::saveRSAPrivKey(const std::string &path) const {
 	std::cout << "save private key nr " << mPrvKeys.begin()->first << std::endl;
-	const std::string outFilename("key_" + std::to_string(mPrvKeys.begin()->first) + ".prv"); // save first priv key from map
+	const std::string outFilename(path + "key_" + std::to_string(mPrvKeys.begin()->first) + ".prv"); // save first priv key from map
+	//std::ofstream file(outFilename); // create empty file
+	//file.close();
 	Base64Encoder prvkeysink(new FileSink(outFilename.c_str()));
 	mPrvKeys.begin()->second.DEREncode(prvkeysink);
 	prvkeysink.MessageEnd();

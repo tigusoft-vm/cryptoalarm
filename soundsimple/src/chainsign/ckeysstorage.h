@@ -25,7 +25,7 @@ public:
     void GenerateRSAKey(unsigned int keyLength, std::string fileName);
     unsigned int getCurrentKey() { return mCurrentKey; }
     void RemoveRSAKey();
-	void saveRSAPrivKey() const;
+	void saveRSAPrivKey(const std::string &path = "") const;
 	void loadRSAPrivKey(std::string filename); // filename == for example "key_1.prv"
 	// new format
 	void RSASignNormalFile(const std::string& inputFilename, const std::string& signatureFilename, bool signKey);
