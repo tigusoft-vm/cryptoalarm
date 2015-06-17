@@ -78,6 +78,7 @@ private:
 	}
 
 	void saveBuffToFile(const sf::Int16* Samples, std::size_t SamplesCount, unsigned int SampleRate, std::string date, std::string mess) {
+		_mark("saveBuffToFile");
 		for (int i = 0; i < SamplesCount; ++i) {
 			//_mark("saveBuffToFile" << Samples[i]);
 		}
@@ -99,6 +100,7 @@ private:
 		_dbg2_c(SAVING_LOG, "size of samples(get samples): " << sizeof(buff.getSamples()));
 		_info_c(SAVING_LOG, "samples count: " << buff.getSampleCount() << ", duration: " << buff.getDuration().asSeconds());
 		std::string filename = cFile::getFilename(date);
+		_mark("filename: " << filename);
 		//_mark("save buff to file " << filename);
 		//_mark("sample rate " << buff.getSampleRate());
 		//_mark("channel count " << buff.getChannelCount());
@@ -113,9 +115,10 @@ private:
 			const std::string key_name(cFile::getWorkDir(filename) + "/key_" + std::to_string(mKeysStorage.getCurrentKey()) + ".pub");
 			mKeysStorage.GenerateRSAKey(KEY_SIZE, key_name);
 			_dbg2("sign key");
-			mKeysStorage.RSASignFile(key_name, key_name + ".sig", true);
+			// mKeysStorage.RSASignFile(key_name, key_name + ".sig", true);
+			mKeysStorage.RSASignNormalFile(key_name, key_name + ".sig", true);
 			_dbg2("sign file");
-			mKeysStorage.RSASignFile(filename, filename + ".sig", false);
+			mKeysStorage.RSASignNormalFile(filename, filename + ".sig", false);
 			mKeysStorage.RemoveRSAKey();
 			//_note("test verify file " << filename << " using " << key_name);
 			//mKeysStorage.RSAVerifyFile(filename + ".sig", key_name);
