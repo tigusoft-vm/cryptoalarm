@@ -35,9 +35,10 @@ void cRecorder::startRecording() {
 		 *
 		 * This thread waits for exit key
 		 */
-		while(!FLAG_signalHandler);
+		while(!FLAG_signalHandler) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+		};
 		//waitForExitKey();
-		
 	}
 	Recorder.stop();
 }
