@@ -5,8 +5,9 @@ for f in  $(find ~/Alarm_data/ -name '*.sig*' -or -name '*.wav' -or -name '*.pub
 done
 
 cd $HOME/motion-alert/soundsimple/build/src/
+#cp ~/Alarm_data/key_1.pub .
 
-for f in  ~/Alarm_data/*.sig
+for f in  ~/Alarm_data/*.wav
 	do
 	./simplesound -v "$f"
 	if [ "$?" -ne "1" ] ; then

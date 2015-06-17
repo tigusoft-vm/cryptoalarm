@@ -326,12 +326,13 @@ void cKeysStorage::RSASignNormalFile(const std::string& inputFilename, const std
 		++mCurrentKey;
 }
 
-bool cKeysStorage::RSAVerifyNormalFile(const std::string& inputFilename, const std::string& signatureFilename) {
+bool cKeysStorage::RSAVerifyNormalFile(const std::string& inputFilename, const std::string& signatureFilename, const std::string &dirPath) {
 	std::ifstream sigFile(signatureFilename);
 	std::string word;
 	sigFile >> word; // "PubKeyFilename"
 	std::string pubFileName;
 	sigFile >> pubFileName;
+	pubFileName.insert(0, dirPath);
 	sigFile >> word; // "SignatureSize"
 	unsigned int signatureSize;
 	sigFile >> signatureSize;
