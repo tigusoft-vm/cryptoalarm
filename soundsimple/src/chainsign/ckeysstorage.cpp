@@ -285,8 +285,17 @@ void cKeysStorage::loadRSAPrivKey(std::string filename) {
 	// generate key number from filename
 	unsigned int keyNumber;
 	// key_1.prv
-	filename.erase(0, 4); // 1.prv
+	std::cout << "filename " << filename << std::endl;
+	std::string::iterator it = filename.end();
+	it -= 5;
+	while (std::isdigit(*it)) {
+		it--;
+	}
+	it++;
+	filename.erase(filename.begin(), it);
 	filename.erase(filename.size() - 4); // 1
+	std::cout << "filename " << filename << std::endl;
+	//filename.erase(0, 4); // 1.prv
 	keyNumber = std::stoi(filename);
 	mPrvKeys.insert(std::pair<int, CryptoPP::RSA::PrivateKey>(keyNumber, prvKey));
 	mCurrentKey = keyNumber + 1;
