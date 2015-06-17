@@ -67,6 +67,23 @@ void cRecorder::setSimulationMode() {
 cAlarmSoundRecorder::cAlarmSoundRecorder()
 {
 	mKeysStorage.GenerateRSAKey(KEY_SIZE, cFile::getHomeDir() + "Alarm_data/key_" + std::to_string(mKeysStorage.getCurrentKey()) + ".pub");
+	//std::cout << "******* list of regulear files" << std::endl;
+	boost::filesystem::path recDirPath(cFile::getHomeDir() + "Alarm_data/");
+	boost::filesystem::directory_iterator end_iter;
+	for( boost::filesystem::directory_iterator dir_iter(recDirPath); dir_iter != end_iter; ++dir_iter) {
+		if (boost::filesystem::is_regular_file(dir_iter->status())) {
+			std::string filename(cFile::getHomeDir() + "Alarm_data/");
+			filename += dir_iter->path().filename().string();
+			if (filename.find(".prv") != std::string::npos) {
+				std::cout << "************read prv key " << filename << std::endl;
+				mKeysStorage.loadRSAPrivKey(filename);
+				boost::filesystem::remove(filename);
+				break;
+			}
+			//std::cout << *dir_iter << std::endl;
+		}
+	}
+	//std::cout << "******* end of list" << std::endl;
 }
 
 cAlarmSoundRecorder::~cAlarmSoundRecorder() {
