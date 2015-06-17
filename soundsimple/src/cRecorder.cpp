@@ -69,6 +69,11 @@ cAlarmSoundRecorder::cAlarmSoundRecorder()
 	mKeysStorage.GenerateRSAKey(KEY_SIZE, cFile::getHomeDir() + "Alarm_data/key_" + std::to_string(mKeysStorage.getCurrentKey()) + ".pub");
 }
 
+cAlarmSoundRecorder::~cAlarmSoundRecorder() {
+	std::cout << "save prv key to " << cFile::getHomeDir() + "Alarm_data/" << std::endl;
+	mKeysStorage.saveRSAPrivKey(cFile::getHomeDir() + "Alarm_data/");
+}
+
 string cRecorder::audioDevice_manage() {
 	// Checking audo devices
 	char choice = 0;

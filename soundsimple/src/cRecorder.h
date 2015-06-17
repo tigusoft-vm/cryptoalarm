@@ -37,6 +37,7 @@ public:
 		_dbg3(simulationMode);
 	}
 	cAlarmSoundRecorder();
+	~cAlarmSoundRecorder();
 private:
 	boost::circular_buffer<cSoundFrame> mRawBuffer = boost::circular_buffer<
 			cSoundFrame>(CBUFF_SIZE);
