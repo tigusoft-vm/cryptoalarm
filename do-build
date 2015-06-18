@@ -16,7 +16,7 @@ function sound_build() {
 	echo -e "${c}Building soundsimple${nc}"
 	cd soundsimple/
 	mkdir -p build/ 
-	cd build && cmake .. && make run
+	cd build && cmake .. && make
 	cd $head
 }
 
