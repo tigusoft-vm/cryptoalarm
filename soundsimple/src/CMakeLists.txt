@@ -1,7 +1,7 @@
 file(GLOB_RECURSE SIMPLESOUND *)
 
 add_subdirectory(otshell_utils)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wl,--no-as-needed -pthread -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -pthread --std=c++11")
 
 
 set(SFML_LIBRARIES_DIR "${CMAKE_SOURCE_DIR}/deps/SFML/lib")
