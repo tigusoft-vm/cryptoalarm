@@ -1,5 +1,5 @@
 #!/bin/bash
-cmd="./do"
+cmd="./do-build"
 if [[ $0 != $cmd ]]; then 
 	echo -e "${w}Wrong path! You should run this script: ./do ${nc}"
 	exit 1
