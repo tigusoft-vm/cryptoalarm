@@ -23,8 +23,8 @@ function start_chainsign_daemon() {
 		cmake . && make
 	fi
 
-	./chainsign --daemon
-
+	./chainsign --daemon &
+	cd $start_dir
 }
 
 
