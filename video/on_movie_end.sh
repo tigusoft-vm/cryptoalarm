@@ -8,11 +8,10 @@ echo "EVENTSCRIPT: $0... will sign the file. head=$head"
 currpwd="$PWD"
 filepwd="$currpwd"
 cd ../chainsign
-echo "Calling chainsign - start"
-./sign_file.sh "$filepwd/$1"
-echo "Calling chainsign - done"
-mv *.pub "$head/rec/"
-mv *.sig "$head/rec/"
+echo "send SIGN-NEXTKEY"
+./send_msg/send_msg fifo SIGN-NEXTKEY
+echo "send $1"
+./send_msg/send_msg fifo "$1"
 cd "$currpwd"
 
 bash lib_event.sh "recdone" "info"
