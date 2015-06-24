@@ -2,7 +2,7 @@
 date=$(date +%Y-%m-%d_%H:%M:%S%z)
 start_dir=`pwd`
 
-function ask() { 
+function ask() {
         REPLY=$1
         if ! [[ $REPLY =~ ^[Yy]$ ]]; then
                 echo "Aborting."
@@ -10,12 +10,12 @@ function ask() {
         fi
 }
 
-function start_chainsign_daemon() { 
-	echo "[INFO] Starting chainsign daemon" 
+function start_chainsign_daemon() {
+	echo "[INFO] Starting chainsign daemon"
 	if ! [ -d ../chainsign ]; then
 		echo "[ERROR] chainsign directory doesn't exist"
 		echo "Run ./do script or(and) check directory"
-	fi	
+	fi
 
 	cd ../chainsign
 
@@ -41,18 +41,18 @@ if [[ $1 != "--dry-run" ]]; then
 	echo "guarding-since-$date[$1]" > ~/stat
 
 	./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting..."
-	sleep 10
+	#sleep 10
 	./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting..."
-	sleep 60
+	#sleep 60
 
 	./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting...3"
-	sleep 5
+	#sleep 5
 	./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting...2"
-	sleep 5
+	#sleep 5
 	./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting...1"
-	sleep 5
+	#sleep 5
 	./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting...GO"
-	sleep 5 
+	#sleep 5
 fi
 
 motion
