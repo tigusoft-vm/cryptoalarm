@@ -31,6 +31,12 @@ void signalHandler(int signum)
 
 cKeysStorage keyStorage;
 
+void printError() {
+	for (int i = 0; i < 20; ++i) {
+		std::cout << "***************ERROR***************" << std::endl;
+	}
+}
+
 int verify(std::string firstKey, const std::string &path) // verify keys, get name of 1st pub file, return last good key
 {
 	//_scope_fact("firstKey " << firstKey << " path " << path);
@@ -116,24 +122,28 @@ unsigned int verifyOneFile(const std::string &fileName) //fileName = normal file
 	lastGoodKey = ret;
 	if (ret == -1) {
 		std::cout << "***keys verification error***" << std::endl;
+		printError();
 		return 2;
 	}
 	
 	std::cout << "file name " << fileName << " using " << fileName + ".sig" << std::endl;
 	if (!boost::filesystem::exists(fileName + ".sig")) {
 		std::cout << "***ERROR reading file " << fileName + ".sig" << "***" << std::endl;
+		printError();
 		return 5;
 	}
 	ret = keyStorage.RSAVerifyNormalFile(fileName, fileName + ".sig", mainDir);
 	//std::cout << ret << std::endl;
 	if (ret == 0) {
 		std::cout << "***file verification error***" << std::endl;
+		printError();
 		return 3;
 	}
 	
 	if (ret > lastGoodKey) {
 		std::cout << "***file verification error***" << std::endl;
 		std::cout << "***pub key < last good key***" << std::endl;
+		printError();
 		return 4;
 	}
 	
