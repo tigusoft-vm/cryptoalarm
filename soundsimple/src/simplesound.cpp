@@ -120,6 +120,10 @@ unsigned int verifyOneFile(const std::string &fileName) //fileName = normal file
 	}
 	
 	std::cout << "file name " << fileName << " using " << fileName + ".sig" << std::endl;
+	if (!boost::filesystem::exists(fileName + ".sig")) {
+		std::cout << "***ERROR reading file " << fileName + ".sig" << "***" << std::endl;
+		return 5;
+	}
 	ret = keyStorage.RSAVerifyNormalFile(fileName, fileName + ".sig", mainDir);
 	//std::cout << ret << std::endl;
 	if (ret == 0) {
