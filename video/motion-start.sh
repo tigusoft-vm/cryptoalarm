@@ -55,7 +55,15 @@ if [[ $1 != "--dry-run" ]]; then
 	#sleep 5
 fi
 
-motion
+debian_ver=`cat /etc/debian_version`
+echo "debian ver = $debian_ver"
+if [[ $debian_ver < 8 ]]; then
+	echo "OLD VER"
+	motion -c motion.conf-old2
+else
+	echo "NEW ver"
+	motion
+fi
 
 if [[ $1 != "--dry-run" ]]; then
 	./lib_sendxmpp.sh "rfree.mobile@jit.si" "end of program"
