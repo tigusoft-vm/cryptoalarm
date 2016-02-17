@@ -57,5 +57,12 @@ else
 	chainsign_build
 	sound_build
 fi
+
+cd ~
+git clone https://github.com/robertoleksy/chainsign.git
+cd chainsign
+cmake .
+make
+
 #chainsign_build
 #sound_build
