@@ -10,14 +10,29 @@ and boost-dev library, version >= 1.49
 ### Building 
 Run script
 ``
-./do
+./do-build
 ``
 
 ### Usage 
 After build:
 ``
-soundsimple -a
+~/motion-alert/soundsimple/scripts/run-alarm.sh
 ``
+
+###  Verify
+1) Compare your key and ~/Alarm_data/key_1.pub file
+2) run
+``
+~/motin-alert/soundsimple/scripts/verify.sh
+``
+3) rm -rf ~/Alarm_data and run again
+``
+~/motion-alert/soundsimple/scripts/run-alarm.sh
+``
+or just run above script for continue chain
+
+All above commands run as normal user
+
 ### Testing
 building working on:
     
