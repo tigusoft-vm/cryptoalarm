@@ -38,6 +38,13 @@ fi
 if [[ $1 != "--dry-run" ]]; then
 	start_chainsign_daemon 
 
+	# wait for file
+	while [ ! -f ~/keys/key_1.pub ]
+	do
+		sleep 1
+	done
+	sha512sum ~/keys/key_1.pub > ~/keys/key_1.pub.sha512
+
 	echo "guarding-since-$date[$1]" > ~/stat
 
 	./lib_sendxmpp.sh "rfree.mobile@jit.si" "starting..."
