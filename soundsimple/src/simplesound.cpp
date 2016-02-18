@@ -154,6 +154,7 @@ unsigned int verifyOneFile(const std::string &fileName) //fileName = normal file
 void startAlarm(bool simulation) {
 	cRecorder rec;
 	if (simulation) rec.setSimulationMode();
+	std::system("sha512sum ~/Alarm_data/key_1.pub > ~/Alarm_data/key_1.pub.sha512");
 	rec.startRecording();
 }
 
