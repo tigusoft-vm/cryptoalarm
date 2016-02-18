@@ -5,10 +5,14 @@
 
 message=$1 
 
+opt="-t"
+
 m="$1 alertalert2-snd"
-echo "$1""$m"  | sendxmpp -s alarm happuri@mempo.org  
-echo "$1""$m"  | sendxmpp -s alarm abbys@dukgo.com  
-echo "$1""$m"  | sendxmpp -s alarm rfree.m@mempo.org  
-echo "$1""$m"  | sendxmpp -s alarm rfree.w@mempo.org  
-echo "$m"  | sendxmpp -s alarm rfree@mempo.org  
-echo "$1""$m"  | sendxmpp -s alarm rfree.mobile@jit.si  
+#echo "$1""$m"  | sendxmpp $opt alarm happuri@mempo.org
+#echo "$1""$m"  | sendxmpp $opt alarm abbys@dukgo.com
+#echo "$1""$m"  | sendxmpp $opt alarm rfree.m@mempo.org
+#echo "$1""$m"  | sendxmpp $opt alarm rfree.w@mempo.org
+#echo "$m"  | sendxmpp $opt alarm rfree@mempo.org
+#echo "$1""$m"  | sendxmpp $opt alarm rfree.mobile@jit.si
+
+echo "$1""$m"  | sendxmpp $opt alarm rob100@dukgo.com
