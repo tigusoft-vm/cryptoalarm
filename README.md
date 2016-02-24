@@ -12,7 +12,7 @@ git submodule init
 Work in progress.
 
 
-``
+```
 
 ~/.config/cryptoalarm.conf
 install_dir_var=~/cryptoalarm-var/
@@ -61,7 +61,7 @@ Video
 
 
 
-``
+```
 
 
 # Soundsimple
