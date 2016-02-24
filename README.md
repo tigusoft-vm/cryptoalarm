@@ -1,3 +1,69 @@
+
+### INSTALL ###
+
+git submodule update
+git submodule init
+
+
+
+
+### Technical plan ###
+
+Work in progress.
+
+
+``
+
+~/.config/cryptoalarm.conf
+install_dir_var=~/cryptoalarm-var/
+install_dir_bin=~/cryptoalarm-bin/
+
+
+
+
+Usage: Sound system
+
+ ~/motion-alert/soundsimple/scripts/run-alarm.sh
+
+
+~/cryptoalarm-var/sound/
+~/cryptoalarm-var/video/
+~/cryptoalarm-var/text/
+
+
+~/cryptoalarm/sound/
+        key1.pub
+        key1.pub.sha512
+        key_33.prv
+        2016-02-23
+                12-41-07
+                        2016-02-23_12-41-07.tar.gz
+                        2016-02-23_12-41-07.wav
+                        2016-02-23_12-41-07.wav.sig
+                        key_32.pub
+                        key_32.pub.sig
+                12-41-30
+                				[... wav wav.sig .tar.gz]
+                        key_33.pub
+                        key_33.pub.sig
+
+
+
+Video
+~/keys/
+        key1.pub
+        key_1.pub.sha512
+        key_2.pub
+        key_2.pub.sig
+~/motion-alert/video/rec
+        20160223-15_20_52-cam1-01-03-movie.avi
+        20160223-15_20_52-cam1-01-03-movie.avi.sig
+
+
+
+``
+
+
 # Soundsimple
 ### Dependencies
 Needed packages for distributions based on Debian. Tested on Debian (Wheezy and Jessie) and Linux Mint 17.1 Rebecca.
